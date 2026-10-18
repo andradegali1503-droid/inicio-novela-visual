@@ -145,16 +145,16 @@ screen reaction_overlay():
         add "#ffd13b" at mood_glow_fade
 
     if reaccion_actual_icono:
-        $ x_emote = 0.56
+        $ x_emote = 0.58
         if reaccion_actual_pos == "left":
-            $ x_emote = 0.25
+            $ x_emote = 0.30
         elif reaccion_actual_pos == "right":
-            $ x_emote = 0.78
+            $ x_emote = 0.85
 
         add reaccion_actual_icono:
             at emote_pop_anim
             xalign x_emote
-            ypos 135
+            ypos 155
 
         timer 2.35 action Function(limpiar_reaccion)
 

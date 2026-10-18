@@ -4,63 +4,69 @@
 
 define flash = Fade(0.1, 0.0, 0.4, color="#ffffff")
 
-## Posiciones en pantalla con entrada suave y reseteo limpio de escala/offset
+## Posiciones en pantalla con centrado exacto (xanchor 0.5, yanchor 1.0) para lienzos 700x940
 transform pos_left:
-    yalign 1.0
+    xanchor 0.5
+    yanchor 1.0
+    ypos 1.0
     zoom 1.0
     xoffset 0
     yoffset 0
     alpha 1.0
-    easein 0.35 xalign 0.15
+    easein 0.35 xpos 0.22
 
 transform pos_center:
-    yalign 1.0
+    xanchor 0.5
+    yanchor 1.0
+    ypos 1.0
     zoom 1.0
     xoffset 0
     yoffset 0
     alpha 1.0
-    easein 0.35 xalign 0.5
+    easein 0.35 xpos 0.50
 
 transform pos_right:
-    yalign 1.0
+    xanchor 0.5
+    yanchor 1.0
+    ypos 1.0
     zoom 1.0
     xoffset 0
     yoffset 0
     alpha 1.0
-    easein 0.35 xalign 0.85
+    easein 0.35 xpos 0.78
 
 ## Entradas dinámicas desde los lados
 transform enter_left:
-    xalign -0.3 yalign 1.0 alpha 0.0 zoom 1.0 xoffset 0 yoffset 0
+    xanchor 0.5 yanchor 1.0 xpos -0.20 ypos 1.0 alpha 0.0 zoom 1.0 xoffset 0 yoffset 0
     parallel:
-        easein_cubic 0.45 xalign 0.16
+        easein_cubic 0.45 xpos 0.22
     parallel:
         linear 0.3 alpha 1.0
 
 transform enter_right:
-    xalign 1.3 yalign 1.0 alpha 0.0 zoom 1.0 xoffset 0 yoffset 0
+    xanchor 0.5 yanchor 1.0 xpos 1.20 ypos 1.0 alpha 0.0 zoom 1.0 xoffset 0 yoffset 0
     parallel:
-        easein_cubic 0.45 xalign 0.84
+        easein_cubic 0.45 xpos 0.78
     parallel:
         linear 0.3 alpha 1.0
 
 transform enter_center:
-    xalign 0.5 yalign 1.05 alpha 0.0 zoom 0.95 xoffset 0 yoffset 0
+    xanchor 0.5 yanchor 1.0 xpos 0.50 ypos 1.04 alpha 0.0 zoom 0.96 xoffset 0 yoffset 0
     parallel:
-        easein_back 0.4 yalign 1.0 zoom 1.0
+        easein_back 0.4 ypos 1.0 zoom 1.0
     parallel:
         linear 0.3 alpha 1.0
 
 ## Salidas dinámicas
 transform exit_left:
     parallel:
-        easeout_cubic 0.4 xalign -0.3
+        easeout_cubic 0.4 xpos -0.25
     parallel:
         linear 0.35 alpha 0.0
 
 transform exit_right:
     parallel:
-        easeout_cubic 0.4 xalign 1.3
+        easeout_cubic 0.4 xpos 1.25
     parallel:
         linear 0.35 alpha 0.0
 
@@ -68,16 +74,16 @@ transform exit_right:
 # Saltito alegre (Genki / Entusiasmo)
 transform happy_bounce:
     yoffset 0 xoffset 0
-    easein 0.12 yoffset -28
+    easein 0.12 yoffset -26
     easeout 0.12 yoffset 0
-    easein 0.09 yoffset -15
+    easein 0.09 yoffset -14
     easeout 0.09 yoffset 0
 
 # Doble salto de emoción
 transform excited_jump:
     yoffset 0 xoffset 0
     block:
-        easein 0.14 yoffset -32
+        easein 0.14 yoffset -28
         easeout 0.14 yoffset 0
         repeat 2
 
@@ -95,24 +101,28 @@ transform anger_shake:
 # Hundirse por timidez o vergüenza (Kuudere / Sonrojo)
 transform shy_sink:
     yoffset 0 xoffset 0 zoom 1.0
-    easein 0.35 yoffset 22 zoom 0.97
+    easein 0.35 yoffset 18 zoom 0.98
     linear 0.08 xoffset -4
     linear 0.08 xoffset 4
     linear 0.08 xoffset 0
     pause 0.25
     easeout 0.3 yoffset 0 zoom 1.0
 
-# Acercamiento íntimo / romántico (SIEMPRE asegura xalign 0.5 e yalign 1.0)
+# Acercamiento íntimo / romántico centrado sin cortar la cabeza
 transform closeup_romance:
-    xalign 0.5
-    yalign 1.0
+    xanchor 0.5
+    yanchor 1.0
+    xpos 0.50
+    ypos 1.0
     alpha 1.0
     xoffset 0
-    easein_cubic 0.45 zoom 1.14 yoffset 35
+    easein_cubic 0.42 zoom 1.10 yoffset 28
 
 transform reset_zoom:
-    xalign 0.5
-    yalign 1.0
+    xanchor 0.5
+    yanchor 1.0
+    xpos 0.50
+    ypos 1.0
     xoffset 0
     easeout_cubic 0.35 zoom 1.0 yoffset 0
 
@@ -149,10 +159,10 @@ transform popup_float:
 # Latido romántico (Doki-Doki: cuando la heroína siente mariposas o amor intenso)
 transform heartbeat_throb:
     yoffset 0 xoffset 0
-    easein 0.14 zoom 1.05 yoffset -6
+    easein 0.14 zoom 1.04 yoffset -5
     easeout 0.14 zoom 1.0 yoffset 0
     pause 0.06
-    easein 0.12 zoom 1.04 yoffset -4
+    easein 0.12 zoom 1.03 yoffset -3
     easeout 0.18 zoom 1.0 yoffset 0
 
 # Nerviosismo / Rubor intenso (Flustered wobble: balanceo tímido de un lado a otro)
@@ -168,29 +178,31 @@ transform fluster_wobble:
 # Contoneo seductor (Modo Darkness: movimiento hipnótico para Kuroe, Mirei y Reina)
 transform seductive_sway:
     yoffset 0 xoffset 0
-    easein_quad 0.30 xoffset 14 yoffset -6 zoom 1.04
-    easeout_quad 0.30 xoffset -10 yoffset 0 zoom 1.02
+    easein_quad 0.30 xoffset 12 yoffset -4 zoom 1.03
+    easeout_quad 0.30 xoffset -10 yoffset 0 zoom 1.01
     easein_quad 0.25 xoffset 0 yoffset 0 zoom 1.0
 
 # Sobresalto de sorpresa (¡Eh?!: brinco repentino cuando la toman desprevenida)
 transform surprised_pop:
     yoffset 0 xoffset 0
-    easein_back 0.14 yoffset -36 zoom 1.05
+    easein_back 0.14 yoffset -28 zoom 1.04
     easeout_bounce 0.24 yoffset 0 zoom 1.0
 
 # Acercamiento susurrante ultra-cercano (Lean-in close: susurro al oído o beso)
 transform lean_in_close:
-    xalign 0.5
-    yalign 1.0
+    xanchor 0.5
+    yanchor 1.0
+    xpos 0.50
+    ypos 1.0
     alpha 1.0
     xoffset 0
-    easein_cubic 0.40 zoom 1.22 yoffset 60
+    easein_cubic 0.40 zoom 1.15 yoffset 42
 
 # Suspiro / Alivio / Melancolía suave
 transform sigh_sink:
     yoffset 0 xoffset 0
-    easein 0.25 yoffset -8
-    easeout 0.45 yoffset 16
+    easein 0.25 yoffset -6
+    easeout 0.45 yoffset 14
     pause 0.15
     easein 0.30 yoffset 0
 

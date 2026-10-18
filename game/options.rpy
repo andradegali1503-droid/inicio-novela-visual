@@ -190,6 +190,8 @@ init python:
     build.classify('**/.**', None)
     build.classify('**/#**', None)
     build.classify('**/thumbs.db', None)
+    build.classify('web-build/**', None)
+    build.classify('**.zip', None)
 
     ## Para archivar, se clasifican como 'archive'.
 
