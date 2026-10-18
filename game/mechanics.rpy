@@ -88,9 +88,20 @@ default intentos_bloqueo_zona = {
 }
 default zona_modal_bloqueada = "biblioteca"
 
-## Cola apilable de notificaciones flotantes
+## Cola apilable de notificaciones flotantes y reacciones emocionales en vivo
 default cola_popups = []
 default mostrar_hud = False
+default reaccion_actual_icono = None
+default reaccion_actual_pos = "center"
+default reaccion_actual_ambiente = None
+default charlas_intimidad = {
+    "akane": 0,
+    "yuki": 0,
+    "hana": 0,
+    "kuroe": 0,
+    "mirei": 0,
+    "reina": 0
+}
 
 init python:
     # Diccionario de Zonas del Instituto Sakura para el Mapa de Navegación Libre
@@ -663,3 +674,28 @@ init python:
     def remover_item(nombre_item):
         if nombre_item in store.inventario_items:
             store.inventario_items.remove(nombre_item)
+
+    def limpiar_reaccion():
+        store.reaccion_actual_icono = None
+        store.reaccion_actual_ambiente = None
+        renpy.hide_screen("reaction_overlay")
+
+    def mostrar_reaccion(emote, posicion="center", ambiente=None):
+        """Muestra un icono de reacción anime flotante (hearts, anger, shock, sweat, sparkle, lust, question, music) y un brillo ambiental opcional."""
+        mapa_iconos = {
+            "hearts": "images/ui/emote_hearts.png",
+            "anger": "images/ui/emote_anger.png",
+            "shock": "images/ui/emote_shock.png",
+            "sweat": "images/ui/emote_sweat.png",
+            "sparkle": "images/ui/emote_sparkle.png",
+            "lust": "images/ui/emote_lust.png",
+            "question": "images/ui/emote_question.png",
+            "music": "images/ui/emote_music.png"
+        }
+        store.reaccion_actual_icono = mapa_iconos.get(emote, "images/ui/emote_hearts.png")
+        store.reaccion_actual_pos = posicion
+        store.reaccion_actual_ambiente = ambiente
+        renpy.hide_screen("reaction_overlay")
+        renpy.show_screen("reaction_overlay")
+        renpy.restart_interaction()
+

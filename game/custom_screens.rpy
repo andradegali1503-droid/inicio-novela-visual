@@ -134,6 +134,32 @@ screen point_popup():
         timer 2.6 action Function(limpiar_popups)
 
 
+## 2B. Overlay de Reacciones Anime en Vivo (Emotes 💕💢❗💧✨🔥 + Brillo Ambiental)
+screen reaction_overlay():
+    zorder 105
+    if reaccion_actual_ambiente == "romance":
+        add "#ff4d94" at mood_glow_fade
+    elif reaccion_actual_ambiente == "darkness":
+        add "#c724b1" at mood_glow_fade
+    elif reaccion_actual_ambiente == "shock":
+        add "#ffd13b" at mood_glow_fade
+
+    if reaccion_actual_icono:
+        $ x_emote = 0.56
+        if reaccion_actual_pos == "left":
+            $ x_emote = 0.25
+        elif reaccion_actual_pos == "right":
+            $ x_emote = 0.78
+
+        add reaccion_actual_icono:
+            at emote_pop_anim
+            xalign x_emote
+            ypos 135
+
+        timer 2.35 action Function(limpiar_reaccion)
+
+
+
 ## 3. Panel Modal de las 3 HEROÍNAS PRINCIPALES (Estilo To Love-Ru Romance & Comedia)
 screen girls_status_modal():
     modal True
