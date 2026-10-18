@@ -1,0 +1,7 @@
+# RenPyWeb progressive download rules - first match applies
+# '+' = progressive download, '-' = keep in game.zip (default)
+- image game/gui/**
+- image game/images/ui/**
+- image game/**
++ music game/audio/**
++ voice game/voice/**
