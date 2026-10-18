@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "buildCommand": null,
+  "installCommand": null,
+  "outputDirectory": "web-build",
+  "headers": [
+    {
+      "source": "/(.*)\\.wasm",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/wasm"
+        }
+      ]
+    },
+    {
+      "source": "/game.zip",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
+    }
+  ]
+}
