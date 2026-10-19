@@ -1,4 +1,4 @@
-﻿################################################################################
+################################################################################
 ## Inicialización
 ################################################################################
 
@@ -62,13 +62,17 @@ style vscrollbar:
 
 style slider:
     ysize gui.slider_size
-    base_bar Frame("gui/slider/horizontal_[prefix_]bar.png", gui.slider_borders, tile=gui.slider_tile)
+    left_bar Frame("gui/slider/horizontal_[prefix_]left.png", gui.slider_borders, tile=gui.slider_tile)
+    right_bar Frame("gui/slider/horizontal_[prefix_]right.png", gui.slider_borders, tile=gui.slider_tile)
     thumb "gui/slider/horizontal_[prefix_]thumb.png"
+    thumb_offset 17
 
 style vslider:
     xsize gui.slider_size
-    base_bar Frame("gui/slider/vertical_[prefix_]bar.png", gui.vslider_borders, tile=gui.slider_tile)
+    top_bar Frame("gui/slider/vertical_[prefix_]top.png", gui.vslider_borders, tile=gui.slider_tile)
+    bottom_bar Frame("gui/slider/vertical_[prefix_]bottom.png", gui.vslider_borders, tile=gui.slider_tile)
     thumb "gui/slider/vertical_[prefix_]thumb.png"
+    thumb_offset 17
 
 
 style frame:
@@ -246,14 +250,14 @@ screen quick_menu():
             style_prefix "quick"
             style "quick_menu"
 
-            textbutton _("Atrás") action Rollback()
-            textbutton _("Historial") action ShowMenu('history')
-            textbutton _("Saltar") action Skip() alternate Skip(fast=True, confirm=True)
-            textbutton _("Auto") action Preference("auto-forward", "toggle")
-            textbutton _("Guardar") action ShowMenu('save')
-            textbutton _("Guardar R.") action QuickSave()
-            textbutton _("Cargar R.") action QuickLoad()
-            textbutton _("Prefs.") action ShowMenu('preferences')
+            textbutton _("◀ Atrás") action Rollback()
+            textbutton _("📜 Historial") action ShowMenu('history')
+            textbutton _("⏩ Saltar") action Skip() alternate Skip(fast=True, confirm=True)
+            textbutton _("▶ Auto") action Preference("auto-forward", "toggle")
+            textbutton _("💾 Guardar") action ShowMenu('save')
+            textbutton _("⚡ Rápido") action QuickSave()
+            textbutton _("📂 Cargar") action QuickLoad()
+            textbutton _("⚙️ Opciones") action ShowMenu('preferences')
 
 
 ## Este código asegura que la pantalla 'quick_menu' se muestra en el juego,
@@ -268,8 +272,9 @@ style quick_button is default
 style quick_button_text is button_text
 
 style quick_menu:
-    xalign 0.5
-    yalign 1.0
+    xalign 0.98
+    yalign 0.99
+    spacing 4
 
 style quick_button:
     properties gui.button_properties("quick_button")
@@ -299,17 +304,19 @@ screen navigation():
 
         if main_menu:
 
-            textbutton _("Comenzar") action Start()
+            textbutton _("🌸 Comenzar") action Start()
 
         else:
 
-            textbutton _("Historial") action ShowMenu("history")
+            textbutton _("📜 Historial") action ShowMenu("history")
 
-            textbutton _("Guardar") action ShowMenu("save")
+            textbutton _("💾 Guardar") action ShowMenu("save")
 
-        textbutton _("Cargar") action ShowMenu("load")
+        textbutton _("📂 Cargar") action ShowMenu("load")
 
-        textbutton _("Opciones") action ShowMenu("preferences")
+        textbutton _("🏆 Galería de Finales") action Show("endings_gallery_modal")
+
+        textbutton _("⚙️ Opciones") action ShowMenu("preferences")
 
         if _in_replay:
 
@@ -317,20 +324,20 @@ screen navigation():
 
         elif not main_menu:
 
-            textbutton _("Menú principal") action MainMenu()
+            textbutton _("🏠 Menú principal") action MainMenu()
 
-        textbutton _("Acerca de") action ShowMenu("about")
+        textbutton _("📖 Acerca de") action ShowMenu("about")
 
         if renpy.variant("pc") or (renpy.variant("web") and not renpy.variant("mobile")):
 
             ## La ayuda no es necesaria ni relevante en dispositivos móviles.
-            textbutton _("Ayuda") action ShowMenu("help")
+            textbutton _("❓ Ayuda") action ShowMenu("help")
 
         if renpy.variant("pc"):
 
             ## El botón de salida está prohibido en iOS y no es necesario en
             ## Android y Web.
-            textbutton _("Salir") action Quit(confirm=not main_menu)
+            textbutton _("🚪 Salir") action Quit(confirm=not main_menu)
 
 
 style navigation_button is gui_button
@@ -338,10 +345,21 @@ style navigation_button_text is gui_button_text
 
 style navigation_button:
     size_group "navigation"
-    properties gui.button_properties("navigation_button")
+    xsize gui.navigation_button_width
+    ysize 50
+    padding (22, 10)
+    background Frame("gui/button/navigation_idle_background.png", 16, 8, 16, 8)
+    hover_background Frame("gui/button/navigation_hover_background.png", 16, 8, 16, 8)
+    selected_background Frame("gui/button/navigation_selected_background.png", 16, 8, 16, 8)
 
 style navigation_button_text:
-    properties gui.text_properties("navigation_button")
+    size 18
+    bold True
+    color "#ffffff"
+    hover_color "#ffd13b"
+    selected_color "#ffe680"
+    outlines [(2, "#24031a", 0, 0)]
+    yalign 0.5
 
 
 ## Pantalla del menú principal #################################################
@@ -351,30 +369,126 @@ style navigation_button_text:
 ## https://www.renpy.org/doc/html/screen_special.html#main-menu
 
 screen main_menu():
-
-    ## Esto asegura que cualquier otra pantalla de menu es remplazada.
     tag menu
 
-    add gui.main_menu_background
+    # Fondo animado con suave movimiento cinemático
+    add "images/bg_courtyard.png" at bg_menu_drift
 
-    ## Este marco vacío oscurece el menu principal.
+    # Capa de partículas de pétalos de cerezo cayendo
+    add "sakura_petals"
+
+    # Gradiente sutil para legibilidad cinematográfica
+    add "#1a031955"
+
+    # Tarjeta de Título Anime Rom-Com (Lado Izquierdo Superior)
     frame:
-        style "main_menu_frame"
-
-    ## La sentencia 'use' incluye otra pantalla dentro de esta. El contenido
-    ## real del menú principal está en la pantalla de navegación.
-    use navigation
-
-    if gui.show_name:
-
+        xpos 80
+        ypos 60
+        background None
         vbox:
-            style "main_menu_vbox"
+            spacing 8
 
-            text "[config.name!t]":
-                style "main_menu_title"
+            frame:
+                background Frame("images/ui/pill_stat_tlr.png", 24, 12, 24, 12)
+                padding (18, 8)
+                text "🌸 NOVELA VISUAL INTERACTIVA • ROM-COM & MISTERIO 🌸" size 16 bold True color "#ffd13b" outlines [(2, "#24031a", 0, 0)]
 
-            text "[config.version]":
-                style "main_menu_version"
+            text "CRÓNICAS DEL INSTITUTO SAKURA" at menu_title_pulse size 46 bold True color "#ff85c0" outlines [(4, "#24031a", 0, 0), (2, "#ff4d6d", 0, 0)]
+            text "🏮 ¡Líos en el Festival Cultural! 🏮" size 26 bold True color "#ffe680" outlines [(3, "#190212", 0, 0)]
+            text "«Entre 3 heroínas y 3 tentaciones prohibidas... ¿con quién compartirás el clímax?»" size 16 italic True color "#ffffff" outlines [(2, "#190212", 0, 0)]
+
+            $ finales_desb = len(persistent.finales_desbloqueados or set())
+            frame:
+                background Frame("images/ui/panel_inner_tlr.png", 20, 10, 20, 10)
+                padding (16, 7)
+                hbox:
+                    spacing 8
+                    add "images/ui/icon_tlr_heart.png" zoom 0.65 yalign 0.5
+                    text "🏆 Colección de Finales: [finales_desb] / 7 Desbloqueados" size 17 bold True color "#5dfdcb" outlines [(2, "#190212", 0, 0)] yalign 0.5
+
+    # Panel de Botones de Navegación Estilizados (Lado Izquierdo Inferior)
+    frame:
+        xpos 80
+        ypos 430
+        background None
+        vbox:
+            spacing 13
+
+            textbutton "🌸 Comenzar Historia":
+                action Start()
+                background Frame("images/ui/btn_pink_idle.png", 24, 14, 24, 14)
+                hover_background Frame("images/ui/btn_pink_hover.png", 24, 14, 24, 14)
+                padding (32, 13)
+                text_size 21
+                text_bold True
+                text_color "#ffffff"
+                text_outlines [(2, "#4a0528", 0, 0)]
+
+            textbutton "📂 Cargar Partida":
+                action ShowMenu("load")
+                background Frame("images/ui/btn_cyan_idle.png", 24, 14, 24, 14)
+                hover_background Frame("images/ui/btn_cyan_hover.png", 24, 14, 24, 14)
+                padding (32, 13)
+                text_size 21
+                text_bold True
+                text_color "#ffffff"
+                text_outlines [(2, "#062b45", 0, 0)]
+
+            textbutton "🏆 Galería de Finales & Jukebox":
+                action Show("endings_gallery_modal")
+                background Frame("images/ui/btn_gold_idle.png", 24, 14, 24, 14)
+                hover_background Frame("images/ui/btn_gold_hover.png", 24, 14, 24, 14)
+                padding (32, 13)
+                text_size 21
+                text_bold True
+                text_color "#2b0318"
+                text_hover_color "#000000"
+
+            textbutton "⚙️ Opciones & Sonido":
+                action ShowMenu("preferences")
+                background Frame("images/ui/btn_purple_idle.png", 24, 14, 24, 14)
+                hover_background Frame("images/ui/btn_purple_hover.png", 24, 14, 24, 14)
+                padding (32, 13)
+                text_size 21
+                text_bold True
+                text_color "#ffffff"
+                text_outlines [(2, "#2d0645", 0, 0)]
+
+            textbutton "📖 Acerca de":
+                action ShowMenu("about")
+                background Frame("images/ui/btn_dark_idle.png", 24, 14, 24, 14)
+                hover_background Frame("images/ui/btn_dark_hover.png", 24, 14, 24, 14)
+                padding (32, 11)
+                text_size 19
+                text_bold True
+                text_color "#e0e0e0"
+
+            if renpy.variant("pc"):
+                textbutton "🚪 Salir":
+                    action Quit(confirm=False)
+                    background Frame("images/ui/btn_dark_idle.png", 24, 14, 24, 14)
+                    hover_background Frame("images/ui/btn_pink_hover.png", 24, 14, 24, 14)
+                    padding (32, 10)
+                    text_size 18
+                    text_color "#bbbbbb"
+
+    # Tarjeta de Personajes en la esquina inferior derecha
+    frame:
+        xalign 0.95
+        yalign 0.92
+        background Frame("images/ui/panel_inner_tlr.png", 24, 18, 24, 18)
+        padding (20, 14)
+        vbox:
+            spacing 6
+            text "✨ Heroínas del Instituto Sakura ✨" size 15 bold True color "#ffe680" outlines [(2, "#24031a", 0, 0)] xalign 0.5
+            hbox:
+                spacing 8
+                add "images/thumb_akane.png" zoom 0.85
+                add "images/thumb_yuki.png" zoom 0.85
+                add "images/thumb_hana.png" zoom 0.85
+                add "images/thumb_kuroe.png" zoom 0.85
+                add "images/thumb_mirei.png" zoom 0.85
+                add "images/thumb_reina.png" zoom 0.85
 
 
 style main_menu_frame is empty
@@ -475,7 +589,7 @@ screen game_menu(title, scroll=None, yinitial=0.0, spacing=0):
 
     use navigation
 
-    textbutton _("Volver"):
+    textbutton _("◀ Volver"):
         style "return_button"
 
         action Return()
@@ -525,17 +639,32 @@ style game_menu_side:
 
 style game_menu_label:
     xpos 75
-    ysize 180
+    ysize 140
 
 style game_menu_label_text:
-    size 75
-    color gui.accent_color
+    size 48
+    bold True
+    color "#ff85c0"
+    outlines [(3, "#24031a", 0, 0)]
     yalign 0.5
 
 style return_button:
     xpos gui.navigation_xpos
     yalign 1.0
-    yoffset -45
+    yoffset -35
+    xsize gui.navigation_button_width
+    ysize 50
+    padding (22, 10)
+    background Frame("gui/button/navigation_idle_background.png", 16, 8, 16, 8)
+    hover_background Frame("gui/button/navigation_hover_background.png", 16, 8, 16, 8)
+
+style return_button_text:
+    size 18
+    bold True
+    color "#5dfdcb"
+    hover_color "#ffffff"
+    outlines [(2, "#24031a", 0, 0)]
+    yalign 0.5
 
 
 ## Pantalla 'acerca de' ########################################################
@@ -550,24 +679,55 @@ screen about():
 
     tag menu
 
-    ## Esta sentencia 'use' incluye la pantalla 'game_menu' dentro de esta. El
-    ## elemento 'vbox' se incluye entonces dentro del 'viewport' al interno de
-    ## la pantalla 'game_menu'.
     use game_menu(_("Acerca de"), scroll="viewport"):
 
-        style_prefix "about"
-
         vbox:
+            spacing 20
+            xsize 1320
 
-            label "[config.name!t]"
-            text _("Versión [config.version!t]\n")
+            # Banner de Título
+            frame:
+                style "about_card_frame"
+                vbox:
+                    spacing 8
+                    text "🌸 CRÓNICAS DEL INSTITUTO SAKURA: ¡LÍOS EN EL FESTIVAL CULTURAL! 🌸" size 24 bold True color "#ff85c0" outlines [(3, "#24031a", 0, 0)]
+                    text "Edición Definitiva • Director's Cut v2.0" size 18 bold True color "#ffd13b" outlines [(2, "#24031a", 0, 0)]
+                    text "«Un simulador interactivo de comedia romántica escolar con misterio, heroínas tsundere, kuudere, genki y la tentación del Darkness Club.»" size 16 italic True color "#e2e8f0"
 
-            ## 'gui.about' se ajusta habitualmente en 'options.rpy'.
-            if gui.about:
-                text "[gui.about!t]\n"
+            # Fila de 2 Tarjetas Informativas
+            hbox:
+                spacing 24
 
-            text _("Hecho con {a=https://www.renpy.org/}Ren'Py{/a} [renpy.version_only].\n\n[renpy.license!t]")
+                frame:
+                    style "about_card_frame"
+                    xsize 648
+                    vbox:
+                        spacing 10
+                        text "✨ Características Principales" size 20 bold True color "#5dfdcb" outlines [(2, "#190212", 0, 0)]
+                        text "• 3 Heroínas Principales: Akane (Tsundere), Yuki (Kuudere), Hana (Genki)" size 16 color "#ffffff"
+                        text "• 3 Heroínas Darkness Prohibidas: Kuroe (Gótica), Mirei (Enfermera), Reina (Gyaru)" size 16 color "#ffffff"
+                        text "• 7 Finales Únicos y Desbloqueables con Pantalla de Trofeos" size 16 color "#ffffff"
+                        text "• HUD en Vivo de Afinidad, Tentación, Ingenio, Reputación y Festival" size 16 color "#ffffff"
+                        text "• Sistema de Elecciones Bajo Presión con Temporizador de Pánico" size 16 color "#ffffff"
+                        text "• Transiciones de Ubicación Inmersivas y Reacciones Emocionales" size 16 color "#ffffff"
 
+                frame:
+                    style "about_card_frame"
+                    xsize 648
+                    vbox:
+                        spacing 10
+                        text "⚙️ Información Técnica & Créditos" size 20 bold True color "#ffd13b" outlines [(2, "#190212", 0, 0)]
+                        text "• Motor: Ren'Py [renpy.version_only] (Python 3)" size 16 color "#ffffff"
+                        text "• Interfaz: Glassmorphism Moderno con Acentos Neón" size 16 color "#ffffff"
+                        text "• Audio: Banda sonora original y efectos remasterizados" size 16 color "#ffffff"
+                        text "• Licencia: MIT / Ren'Py Engine Open Source" size 16 color "#ffffff"
+                        null height 8
+                        text _("Hecho con cariño para los amantes de las novelas visuales anime.") size 15 italic True color "#ffccf2"
+
+
+style about_card_frame is empty:
+    padding (24, 20)
+    background Frame("gui/card_pref.png", 20, 20, 20, 20)
 
 style about_label is gui_label
 style about_label_text is gui_label_text
@@ -641,15 +801,62 @@ screen file_slots(title):
                     button:
                         action FileAction(slot)
 
-                        has vbox
+                        has vbox:
+                            spacing 4
 
-                        add FileScreenshot(slot) xalign 0.5
+                        # Cabecera de la ranura (Número y botón eliminar)
+                        hbox:
+                            xfill True
+                            ysize 26
+                            text _("✦ Ranura [slot:02d]"):
+                                style "slot_header_text"
+                                yalign 0.5
 
-                        text FileTime(slot, format=_("{#file_time}%A, %d de %B %Y, %H:%M"), empty=_("vacío")):
-                            style "slot_time_text"
+                            if FileLoadable(slot):
+                                textbutton _("✕"):
+                                    action FileDelete(slot, confirm=True)
+                                    style "slot_delete_button"
+                                    yalign 0.5
+                                    tooltip _("Eliminar archivo guardado")
 
-                        text FileSaveName(slot):
-                            style "slot_name_text"
+                        # Área de miniatura con indicador de vacío o captura
+                        fixed:
+                            xsize config.thumbnail_width
+                            ysize config.thumbnail_height
+                            xalign 0.5
+
+                            if FileLoadable(slot):
+                                add FileScreenshot(slot) xalign 0.5 yalign 0.5
+                            else:
+                                frame:
+                                    xfill True
+                                    yfill True
+                                    background "#12031a99"
+                                    vbox:
+                                        align (0.5, 0.5)
+                                        spacing 4
+                                        text _("✦ VACÍO ✦"):
+                                            size 18
+                                            bold True
+                                            color "#783b82"
+                                            xalign 0.5
+                                            outlines [(2, "#18021c", 0, 0)]
+                                        text _("Clic para guardar"):
+                                            size 13
+                                            color "#b085bd"
+                                            italic True
+                                            xalign 0.5
+
+                        # Fecha y nombre de la partida
+                        hbox:
+                            xfill True
+                            text FileTime(slot, format=_("{#file_time}%d/%m/%Y • %H:%M"), empty=_("—")):
+                                style "slot_time_text"
+                                yalign 0.5
+
+                            text FileSaveName(slot):
+                                style "slot_name_text"
+                                yalign 0.5
 
                         key "save_delete" action FileDelete(slot)
 
@@ -663,22 +870,22 @@ screen file_slots(title):
                 hbox:
                     xalign 0.5
 
-                    spacing gui.page_spacing
+                    spacing 8
 
-                    textbutton _("<") action FilePagePrevious()
+                    textbutton _("◀") action FilePagePrevious()
                     key "save_page_prev" action FilePagePrevious()
 
                     if config.has_autosave:
-                        textbutton _("{#auto_page}A") action FilePage("auto")
+                        textbutton _("Auto") action FilePage("auto")
 
                     if config.has_quicksave:
-                        textbutton _("{#quick_page}R") action FilePage("quick")
+                        textbutton _("Rápido") action FilePage("quick")
 
                     ## range(1, 10) da los números del 1 al 9.
                     for page in range(1, 10):
                         textbutton "[page]" action FilePage(page)
 
-                    textbutton _(">") action FilePageNext()
+                    textbutton _("▶") action FilePageNext()
                     key "save_page_next" action FilePageNext()
 
                 if config.has_sync:
@@ -699,6 +906,9 @@ style page_button_text is gui_button_text
 
 style slot_button is gui_button
 style slot_button_text is gui_button_text
+style slot_header_text is gui_text
+style slot_delete_button is gui_button
+style slot_delete_button_text is gui_button_text
 style slot_time_text is slot_button_text
 style slot_name_text is slot_button_text
 
@@ -711,18 +921,64 @@ style page_label_text:
     textalign 0.5
     layout "subtitle"
     hover_color gui.hover_color
+    bold True
+    color "#ffd13b"
+    size 22
+    outlines [(2, "#24031a", 0, 0)]
 
 style page_button:
-    properties gui.button_properties("page_button")
+    xsize 54
+    ysize 42
+    background Frame("gui/button/page_idle_background.png", 10, 6, 10, 6)
+    hover_background Frame("gui/button/page_hover_background.png", 10, 6, 10, 6)
+    selected_background Frame("gui/button/page_selected_background.png", 10, 6, 10, 6)
 
 style page_button_text:
-    properties gui.text_properties("page_button")
+    size 16
+    bold True
+    color "#ffffff"
+    hover_color "#5dfdcb"
+    selected_color "#ffd13b"
+    align (0.5, 0.5)
+    outlines [(2, "#24031a", 0, 0)]
 
 style slot_button:
     properties gui.button_properties("slot_button")
+    padding (15, 12, 15, 12)
+
+style slot_header_text:
+    size 14
+    bold True
+    color "#ffd13b"
+    outlines [(2, "#24031a", 0, 0)]
+
+style slot_delete_button is gui_button:
+    xsize 26
+    ysize 26
+    background Frame("gui/button/delete_idle_background.png", 6, 6, 6, 6)
+    hover_background Frame("gui/button/delete_hover_background.png", 6, 6, 6, 6)
+
+style slot_delete_button_text is gui_button_text:
+    size 13
+    bold True
+    color "#ff85a2"
+    hover_color "#ffffff"
+    align (0.5, 0.5)
 
 style slot_button_text:
     properties gui.text_properties("slot_button")
+
+style slot_time_text:
+    size 13
+    bold True
+    color "#5dfdcb"
+    outlines [(2, "#190212", 0, 0)]
+
+style slot_name_text:
+    size 13
+    color "#ffe680"
+    outlines [(2, "#190212", 0, 0)]
+    xalign 1.0
 
 
 ## Pantalla de preferencias ####################################################
@@ -739,79 +995,142 @@ screen preferences():
     use game_menu(_("Opciones"), scroll="viewport"):
 
         vbox:
+            spacing 24
+            xsize 1320
 
             hbox:
-                box_wrap True
+                spacing 28
 
-                if renpy.variant("pc") or renpy.variant("web"):
-
+                # Tarjeta 1: Pantalla y Velocidad de Lectura
+                frame:
+                    style "pref_glass_card"
                     vbox:
-                        style_prefix "radio"
-                        label _("Pantalla")
-                        textbutton _("Ventana") action Preference("display", "window")
-                        textbutton _("Pantalla completa") action Preference("display", "fullscreen")
+                        spacing 14
+                        xfill True
 
-                vbox:
-                    style_prefix "check"
-                    label _("Saltar")
-                    textbutton _("Texto no visto") action Preference("skip", "toggle")
-                    textbutton _("Tras elecciones") action Preference("after choices", "toggle")
-                    textbutton _("Transiciones") action InvertSelected(Preference("transitions", "toggle"))
+                        text _("🖥️ Pantalla y Visualización"):
+                            style "pref_section_title"
 
-                ## Aquí se pueden añadir 'vboxes' adicionales del tipo
-                ## "radio_pref" o "check_pref" para nuevas preferencias.
+                        if renpy.variant("pc") or renpy.variant("web"):
+                            hbox:
+                                style_prefix "radio"
+                                spacing 24
+                                textbutton _("Ventana") action Preference("display", "window")
+                                textbutton _("Pantalla completa") action Preference("display", "fullscreen")
 
-            null height (4 * gui.pref_spacing)
+                        null height 4
 
-            hbox:
-                style_prefix "slider"
-                box_wrap True
+                        text _("⏩ Opciones de Salto"):
+                            style "pref_section_title"
 
-                vbox:
+                        vbox:
+                            style_prefix "check"
+                            spacing 6
+                            textbutton _("Saltar texto no visto") action Preference("skip", "toggle")
+                            textbutton _("Continuar salto tras elecciones") action Preference("after choices", "toggle")
+                            textbutton _("Omitir transiciones lentas") action InvertSelected(Preference("transitions", "toggle"))
 
-                    label _("Veloc. texto")
+                        null height 4
 
-                    bar value Preference("text speed")
+                        text _("⚡ Velocidad de Lectura"):
+                            style "pref_section_title"
 
-                    label _("Veloc. autoavance")
+                        vbox:
+                            style_prefix "slider"
+                            spacing 8
+                            label _("Velocidad de aparición del texto"):
+                                style "slider_sub_label"
+                            bar value Preference("text speed") style "pref_slider"
 
-                    bar value Preference("auto-forward time")
+                            label _("Tiempo de autoavance"):
+                                style "slider_sub_label"
+                            bar value Preference("auto-forward time") style "pref_slider"
 
-                vbox:
+                # Tarjeta 2: Mezclador de Audio & Sonido
+                frame:
+                    style "pref_glass_card"
+                    vbox:
+                        spacing 14
+                        xfill True
 
-                    if config.has_music:
-                        label _("Volumen música")
+                        text _("🔊 Mezclador de Audio & Sonido"):
+                            style "pref_section_title"
 
-                        hbox:
-                            bar value Preference("music volume")
+                        vbox:
+                            style_prefix "slider"
+                            spacing 10
 
-                    if config.has_sound:
+                            label _("🎵 Volumen de Música"):
+                                style "slider_sub_label"
+                            bar value Preference("music volume") style "pref_slider"
 
-                        label _("Volumen sonido")
+                            label _("💥 Efectos de Sonido"):
+                                style "slider_sub_label"
+                            hbox:
+                                spacing 12
+                                bar value Preference("sound volume") style "pref_slider"
+                                if config.sample_sound:
+                                    textbutton _("▶ Probar"):
+                                        action Play("sound", config.sample_sound)
+                                        style "slider_test_button"
 
-                        hbox:
-                            bar value Preference("sound volume")
+                            label _("🎙️ Voces de Personajes"):
+                                style "slider_sub_label"
+                            hbox:
+                                spacing 12
+                                bar value Preference("voice volume") style "pref_slider"
+                                if config.sample_voice:
+                                    textbutton _("▶ Probar"):
+                                        action Play("voice", config.sample_voice)
+                                        style "slider_test_button"
 
-                            if config.sample_sound:
-                                textbutton _("Prueba") action Play("sound", config.sample_sound)
+                        null height 8
+
+                        frame:
+                            background "#1f042ecc"
+                            padding (14, 10)
+                            xfill True
+                            hbox:
+                                align (0.5, 0.5)
+                                spacing 14
+                                textbutton _("🔇 Silenciar Todo el Audio"):
+                                    action Preference("all mute", "toggle")
+                                    style "mute_all_button"
 
 
-                    if config.has_voice:
-                        label _("Volumen voz")
+style pref_glass_card is empty:
+    xsize 640
+    padding (26, 22)
+    background Frame("gui/card_pref.png", 20, 20, 20, 20)
 
-                        hbox:
-                            bar value Preference("voice volume")
+style pref_section_title is gui_text:
+    color "#ffd13b"
+    bold True
+    size 20
+    outlines [(2, "#24031a", 0, 0)]
 
-                            if config.sample_voice:
-                                textbutton _("Prueba") action Play("voice", config.sample_voice)
+style slider_sub_label is gui_text:
+    color "#ffccf2"
+    bold True
+    size 16
+    outlines [(1, "#190212", 0, 0)]
 
-                    if config.has_music or config.has_sound or config.has_voice:
-                        null height gui.pref_spacing
+style pref_slider is slider:
+    xsize 480
+    ysize gui.slider_size
 
-                        textbutton _("Silenciar todo"):
-                            action Preference("all mute", "toggle")
-                            style "mute_all_button"
+style slider_test_button is gui_button:
+    xsize 96
+    ysize 32
+    background Frame("gui/button/quick_idle_background.png", 14, 6, 14, 6)
+    hover_background Frame("gui/button/quick_hover_background.png", 14, 6, 14, 6)
 
+style slider_test_button_text is gui_button_text:
+    size 14
+    bold True
+    color "#5dfdcb"
+    hover_color "#ffffff"
+    align (0.5, 0.5)
 
 style pref_label is gui_label
 style pref_label_text is gui_label_text
@@ -837,13 +1156,19 @@ style slider_button_text is gui_button_text
 style slider_pref_vbox is pref_vbox
 
 style mute_all_button is check_button
-style mute_all_button_text is check_button_text
+style mute_all_button_text is check_button_text:
+    color "#ff9ebb"
+    hover_color "#ffffff"
 
 style pref_label:
     top_margin gui.pref_spacing
     bottom_margin 3
 
 style pref_label_text:
+    color "#ffd13b"
+    bold True
+    size 20
+    outlines [(2, "#24031a", 0, 0)]
     yalign 1.0
 
 style pref_vbox:
@@ -858,6 +1183,12 @@ style radio_button:
 
 style radio_button_text:
     properties gui.text_properties("radio_button")
+    size 17
+    bold True
+    color "#e2e8f0"
+    hover_color "#ffd13b"
+    selected_color "#5dfdcb"
+    outlines [(2, "#24031a", 0, 0)]
 
 style check_vbox:
     spacing gui.pref_button_spacing
@@ -868,9 +1199,15 @@ style check_button:
 
 style check_button_text:
     properties gui.text_properties("check_button")
+    size 17
+    bold True
+    color "#e2e8f0"
+    hover_color "#ffd13b"
+    selected_color "#ff85c0"
+    outlines [(2, "#24031a", 0, 0)]
 
 style slider_slider:
-    xsize 525
+    xsize 480
 
 style slider_button:
     properties gui.button_properties("slider_button")
@@ -881,7 +1218,7 @@ style slider_button_text:
     properties gui.text_properties("slider_button")
 
 style slider_vbox:
-    xsize 675
+    xsize 600
 
 
 ## Pantalla de historial #######################################################
@@ -895,7 +1232,6 @@ screen history():
 
     tag menu
 
-    ## Evita la predicción de esta pantalla, que podría ser demasiado grande.
     predict False
 
     use game_menu(_("Historial"), scroll=("vpgrid" if gui.history_height else "viewport"), yinitial=1.0, spacing=gui.history_spacing):
@@ -904,30 +1240,42 @@ screen history():
 
         for h in _history_list:
 
-            window:
+            frame:
+                style "history_card_frame"
 
-                ## Esto distribuye los elementos apropiadamente si
-                ## 'history_height' es 'None'.
-                has fixed:
-                    yfit True
+                vbox:
+                    spacing 6
+                    xfill True
 
-                if h.who:
+                    if h.who:
+                        hbox:
+                            spacing 8
+                            yalign 0.5
+                            text "✦" size 16 bold True color "#ffd13b" yalign 0.5
+                            label h.who:
+                                style "history_name"
+                                substitute False
+                                if "color" in h.who_args:
+                                    text_color h.who_args["color"]
 
-                    label h.who:
-                        style "history_name"
+                    $ what = renpy.filter_text_tags(h.what, allow=gui.history_allow_tags)
+                    text what:
+                        style "history_text"
                         substitute False
 
-                        ## Toma el color del texto 'who' de 'Character', si ha
-                        ## sido establecido.
-                        if "color" in h.who_args:
-                            text_color h.who_args["color"]
-
-                $ what = renpy.filter_text_tags(h.what, allow=gui.history_allow_tags)
-                text what:
-                    substitute False
+                    if h.voice:
+                        textbutton _("🔊 Reproducir Voz"):
+                            action VoiceReplay(h.voice)
+                            style "history_voice_button"
 
         if not _history_list:
-            label _("El historial está vacío.")
+            frame:
+                style "history_card_frame"
+                xalign 0.5
+                text _("✦ El registro de diálogo está vacío por el momento. ¡Comienza a leer la historia! ✦"):
+                    size 18
+                    color "#ffd13b"
+                    xalign 0.5
 
 
 ## Esto determina qué etiquetas se permiten en la pantalla de historial.
@@ -935,42 +1283,43 @@ screen history():
 define gui.history_allow_tags = { "alt", "noalt", "rt", "rb", "art" }
 
 
+style history_card_frame is empty:
+    xsize 1320
+    xalign 0.5
+    padding (24, 16, 24, 16)
+    background Frame("gui/history_card.png", 16, 16, 16, 16)
+
+style history_name is gui_label:
+    left_padding 0
+    top_padding 0
+
+style history_name_text is gui_label_text:
+    size 20
+    bold True
+    outlines [(2, "#24031a", 0, 0)]
+
+style history_text is gui_text:
+    size 18
+    color "#f8fafc"
+    outlines [(1, "#18021c", 0, 0)]
+    line_spacing 4
+
+style history_voice_button is gui_button:
+    xsize 180
+    ysize 32
+    background Frame("gui/button/quick_idle_background.png", 14, 6, 14, 6)
+    hover_background Frame("gui/button/quick_hover_background.png", 14, 6, 14, 6)
+
+style history_voice_button_text is gui_button_text:
+    size 14
+    bold True
+    color "#5dfdcb"
+    hover_color "#ffffff"
+    align (0.5, 0.5)
+
 style history_window is empty
-
-style history_name is gui_label
-style history_name_text is gui_label_text
-style history_text is gui_text
-
 style history_label is gui_label
-style history_label_text is gui_label_text
-
-style history_window:
-    xfill True
-    ysize gui.history_height
-
-style history_name:
-    xpos gui.history_name_xpos
-    xanchor gui.history_name_xalign
-    ypos gui.history_name_ypos
-    xsize gui.history_name_width
-
-style history_name_text:
-    min_width gui.history_name_width
-    textalign gui.history_name_xalign
-
-style history_text:
-    xpos gui.history_text_xpos
-    ypos gui.history_text_ypos
-    xanchor gui.history_text_xalign
-    xsize gui.history_text_width
-    min_width gui.history_text_width
-    textalign gui.history_text_xalign
-    layout ("subtitle" if gui.history_text_xalign else "tex")
-
-style history_label:
-    xfill True
-
-style history_label_text:
+style history_label_text is gui_label_text:
     xalign 0.5
 
 
@@ -988,151 +1337,270 @@ screen help():
 
     use game_menu(_("Ayuda"), scroll="viewport"):
 
-        style_prefix "help"
-
         vbox:
-            spacing 23
+            spacing 24
+            xsize 1320
 
+            # Selector de Pestañas
             hbox:
+                spacing 16
+                textbutton _("⌨️ Teclado"):
+                    action SetScreenVariable("device", "keyboard")
+                    style "help_tab_button"
+                    selected (device == "keyboard")
 
-                textbutton _("Teclado") action SetScreenVariable("device", "keyboard")
-                textbutton _("Ratón") action SetScreenVariable("device", "mouse")
+                textbutton _("🖱️ Ratón"):
+                    action SetScreenVariable("device", "mouse")
+                    style "help_tab_button"
+                    selected (device == "mouse")
 
                 if GamepadExists():
-                    textbutton _("Mando") action SetScreenVariable("device", "gamepad")
+                    textbutton _("🎮 Mando"):
+                        action SetScreenVariable("device", "gamepad")
+                        style "help_tab_button"
+                        selected (device == "gamepad")
 
-            if device == "keyboard":
-                use keyboard_help
-            elif device == "mouse":
-                use mouse_help
-            elif device == "gamepad":
-                use gamepad_help
+            # Contenido según dispositivo en tarjeta de cristal
+            frame:
+                style "about_card_frame"
+                xfill True
+                vbox:
+                    spacing 16
+                    if device == "keyboard":
+                        use keyboard_help
+                    elif device == "mouse":
+                        use mouse_help
+                    elif device == "gamepad":
+                        use gamepad_help
 
 
 screen keyboard_help():
 
-    hbox:
-        label _("Intro")
-        text _("Avanza el diálogo y activa la interfaz.")
+    vbox:
+        spacing 14
+        grid 2 6:
+            spacing 18
+            xfill True
 
-    hbox:
-        label _("Espacio")
-        text _("Avanza el diálogo sin seleccionar opciones.")
+            hbox:
+                spacing 14
+                yalign 0.5
+                frame:
+                    style "keycap_frame"
+                    text "Intro / Espacio" style "keycap_text"
+                text _("Avanza el diálogo y activa opciones.") color "#ffffff" size 16 yalign 0.5
 
-    hbox:
-        label _("Teclas de flecha")
-        text _("Navega la interfaz.")
+            hbox:
+                spacing 14
+                yalign 0.5
+                frame:
+                    style "keycap_frame"
+                    text "S" style "keycap_text"
+                text _("Captura de pantalla instantánea.") color "#ffffff" size 16 yalign 0.5
 
-    hbox:
-        label _("Escape")
-        text _("Accede al menú del juego.")
+            hbox:
+                spacing 14
+                yalign 0.5
+                frame:
+                    style "keycap_frame"
+                    text "Tabulador" style "keycap_text"
+                text _("Activa o desactiva el salto continuo.") color "#ffffff" size 16 yalign 0.5
 
-    hbox:
-        label _("Ctrl")
-        text _("Salta el diálogo mientras se presiona.")
+            hbox:
+                spacing 14
+                yalign 0.5
+                frame:
+                    style "keycap_frame"
+                    text "V" style "keycap_text"
+                text _("Asistente accesible por voz.") color "#ffffff" size 16 yalign 0.5
 
-    hbox:
-        label _("Tabulador")
-        text _("Activa/desactiva el salto de diálogo.")
+            hbox:
+                spacing 14
+                yalign 0.5
+                frame:
+                    style "keycap_frame"
+                    text "Ctrl" style "keycap_text"
+                text _("Salto rápido mientras se mantenga presionado.") color "#ffffff" size 16 yalign 0.5
 
-    hbox:
-        label _("Av. pág.")
-        text _("Retrocede al diálogo anterior.")
+            hbox:
+                spacing 14
+                yalign 0.5
+                frame:
+                    style "keycap_frame"
+                    text "Shift + A" style "keycap_text"
+                text _("Menú de accesibilidad.") color "#ffffff" size 16 yalign 0.5
 
-    hbox:
-        label _("Re. pág.")
-        text _("Avanza hacia el diálogo siguiente.")
+            hbox:
+                spacing 14
+                yalign 0.5
+                frame:
+                    style "keycap_frame"
+                    text "Escape" style "keycap_text"
+                text _("Abre o cierra el menú del juego.") color "#ffffff" size 16 yalign 0.5
 
-    hbox:
-        label "H"
-        text _("Oculta la interfaz.")
+            hbox:
+                spacing 14
+                yalign 0.5
+                frame:
+                    style "keycap_frame"
+                    text "Av. Pág / Re. Pág" style "keycap_text"
+                text _("Retrocede o avanza diálogos.") color "#ffffff" size 16 yalign 0.5
 
-    hbox:
-        label "S"
-        text _("Captura la pantalla.")
+            hbox:
+                spacing 14
+                yalign 0.5
+                frame:
+                    style "keycap_frame"
+                    text "Flechas" style "keycap_text"
+                text _("Navega por la interfaz y opciones.") color "#ffffff" size 16 yalign 0.5
 
-    hbox:
-        label "V"
-        text _("Activa/desactiva la asistencia por {a=https://www.renpy.org/l/voicing}voz-automática{/a}.")
+            hbox:
+                spacing 14
+                yalign 0.5
+                frame:
+                    style "keycap_frame"
+                    text "Supr" style "keycap_text"
+                text _("Elimina la partida guardada elegida.") color "#ffffff" size 16 yalign 0.5
 
-    hbox:
-        label "Shift+A"
-        text _("Abre el menú de accesibilidad.")
+            hbox:
+                spacing 14
+                yalign 0.5
+                frame:
+                    style "keycap_frame"
+                    text "H" style "keycap_text"
+                text _("Oculta la interfaz para ver el arte.") color "#ffffff" size 16 yalign 0.5
+
+            hbox:
+                spacing 14
+                yalign 0.5
+                frame:
+                    style "keycap_frame"
+                    text "F" style "keycap_text"
+                text _("Alternar pantalla completa.") color "#ffffff" size 16 yalign 0.5
 
 
 screen mouse_help():
 
-    hbox:
-        label _("Clic izquierdo")
-        text _("Avanza el diálogo y activa la interfaz.")
+    vbox:
+        spacing 16
+        hbox:
+            spacing 16
+            yalign 0.5
+            frame:
+                style "keycap_frame"
+                text "Clic Izquierdo" style "keycap_text"
+            text _("Avanza el diálogo y activa elecciones.") color "#ffffff" size 17 yalign 0.5
 
-    hbox:
-        label _("Clic medio")
-        text _("Oculta la interfaz.")
+        hbox:
+            spacing 16
+            yalign 0.5
+            frame:
+                style "keycap_frame"
+                text "Clic Derecho" style "keycap_text"
+            text _("Abre o cierra el menú de pausa / opciones.") color "#ffffff" size 17 yalign 0.5
 
-    hbox:
-        label _("Clic derecho")
-        text _("Accede al menú del juego.")
+        hbox:
+            spacing 16
+            yalign 0.5
+            frame:
+                style "keycap_frame"
+                text "Clic Medio" style "keycap_text"
+            text _("Oculta la interfaz para contemplar la ilustración.") color "#ffffff" size 17 yalign 0.5
 
-    hbox:
-        label _("Rueda del ratón arriba")
-        text _("Retrocede al diálogo anterior.")
+        hbox:
+            spacing 16
+            yalign 0.5
+            frame:
+                style "keycap_frame"
+                text "Rueda Arriba" style "keycap_text"
+            text _("Abre el historial de diálogo hacia atrás.") color "#ffffff" size 17 yalign 0.5
 
-    hbox:
-        label _("Rueda del ratón abajo")
-        text _("Avanza hacia el diálogo siguiente.")
+        hbox:
+            spacing 16
+            yalign 0.5
+            frame:
+                style "keycap_frame"
+                text "Rueda Abajo" style "keycap_text"
+            text _("Avanza hacia el diálogo siguiente.") color "#ffffff" size 17 yalign 0.5
 
 
 screen gamepad_help():
 
-    hbox:
-        label _("Gatillo derecho\nA/Botón inferior")
-        text _("Avanza el diálogo y activa la interfaz.")
+    vbox:
+        spacing 16
+        hbox:
+            spacing 16
+            yalign 0.5
+            frame:
+                style "keycap_frame"
+                text "Gatillo R / Botón A" style "keycap_text"
+            text _("Avanza el diálogo y activa elecciones.") color "#ffffff" size 17 yalign 0.5
 
-    hbox:
-        label _("Gatillo izquierdo\nBotón sup. frontal izq.")
-        text _("Retrocede al diálogo anterior.")
+        hbox:
+            spacing 16
+            yalign 0.5
+            frame:
+                style "keycap_frame"
+                text "Gatillo L / Botón LB" style "keycap_text"
+            text _("Retrocede al diálogo anterior.") color "#ffffff" size 17 yalign 0.5
 
-    hbox:
-        label _("Botón sup. frontal der.")
-        text _("Avanza hacia el diálogo siguiente.")
+        hbox:
+            spacing 16
+            yalign 0.5
+            frame:
+                style "keycap_frame"
+                text "D-Pad / Sticks" style "keycap_text"
+            text _("Navega por la interfaz y opciones.") color "#ffffff" size 17 yalign 0.5
 
-    hbox:
-        label _("D-Pad, Sticks")
-        text _("Navega la interfaz.")
+        hbox:
+            spacing 16
+            yalign 0.5
+            frame:
+                style "keycap_frame"
+                text "Start / Botón B" style "keycap_text"
+            text _("Accede al menú del juego.") color "#ffffff" size 17 yalign 0.5
 
-    hbox:
-        label _("Inicio, Guía, B/Botón Derecho")
-        text _("Accede al menú del juego.")
+        hbox:
+            spacing 16
+            yalign 0.5
+            frame:
+                style "keycap_frame"
+                text "Botón Y" style "keycap_text"
+            text _("Oculta la interfaz.") color "#ffffff" size 17 yalign 0.5
 
-    hbox:
-        label _("Y/Botón superior")
-        text _("Oculta la interfaz.")
+        null height 10
 
-    textbutton _("Calibrar") action GamepadCalibrate()
+        textbutton _("⚙️ Calibrar Mando"):
+            action GamepadCalibrate()
+            style "help_tab_button"
 
 
-style help_button is gui_button
-style help_button_text is gui_button_text
-style help_label is gui_label
-style help_label_text is gui_label_text
-style help_text is gui_text
+style keycap_frame is empty:
+    background Frame("gui/keycap.png", 10, 10, 10, 10)
+    padding (12, 6)
+    yminimum 38
 
-style help_button:
-    properties gui.button_properties("help_button")
-    xmargin 12
+style keycap_text:
+    size 15
+    bold True
+    color "#ffd13b"
+    outlines [(2, "#24031a", 0, 0)]
+    align (0.5, 0.5)
 
-style help_button_text:
-    properties gui.text_properties("help_button")
+style help_tab_button is gui_button:
+    xsize 210
+    ysize 44
+    background Frame("gui/button/navigation_idle_background.png", 16, 8, 16, 8)
+    hover_background Frame("gui/button/navigation_hover_background.png", 16, 8, 16, 8)
+    selected_background Frame("gui/button/navigation_selected_background.png", 16, 8, 16, 8)
 
-style help_label:
-    xsize 375
-    right_padding 30
-
-style help_label_text:
-    size gui.text_size
-    xalign 1.0
-    textalign 1.0
+style help_tab_button_text is gui_button_text:
+    size 17
+    bold True
+    color "#ffffff"
+    hover_color "#5dfdcb"
+    selected_color "#ffd13b"
+    align (0.5, 0.5)
 
 
 
@@ -1150,33 +1618,56 @@ style help_label_text:
 
 screen confirm(message, yes_action, no_action):
 
-    ## Asegura que otras pantallas no reciban entrada mientras se muestra esta
-    ## pantalla.
     modal True
-
     zorder 200
-
     style_prefix "confirm"
 
     add "gui/overlay/confirm.png"
 
     frame:
+        xalign 0.5
+        yalign 0.5
+        background Frame("gui/frame.png", 28, 28, 28, 28)
+        padding (50, 36)
 
         vbox:
-            xalign .5
-            yalign .5
-            spacing 45
+            xalign 0.5
+            spacing 22
+
+            hbox:
+                xalign 0.5
+                spacing 10
+                add "images/ui/icon_tlr_heart.png" zoom 0.85 yalign 0.5
+                text "✦ AVISO DEL INSTITUTO SAKURA ✦" size 16 bold True color "#ffd13b" outlines [(2, "#24031a", 0, 0)] yalign 0.5
 
             label _(message):
                 style "confirm_prompt"
                 xalign 0.5
 
+            null height 4
+
             hbox:
                 xalign 0.5
-                spacing 150
+                spacing 36
 
-                textbutton _("Sí") action yes_action
-                textbutton _("No") action no_action
+                textbutton _("✓ Sí, continuar"):
+                    action yes_action
+                    background Frame("images/ui/btn_pink_idle.png", 24, 14, 24, 14)
+                    hover_background Frame("images/ui/btn_pink_hover.png", 24, 14, 24, 14)
+                    padding (28, 12)
+                    text_size 20
+                    text_bold True
+                    text_color "#ffffff"
+                    text_outlines [(2, "#4a0528", 0, 0)]
+
+                textbutton _("✕ Cancelar"):
+                    action no_action
+                    background Frame("images/ui/btn_dark_idle.png", 24, 14, 24, 14)
+                    hover_background Frame("images/ui/btn_cyan_hover.png", 24, 14, 24, 14)
+                    padding (28, 12)
+                    text_size 20
+                    text_bold True
+                    text_color "#e0e0e0"
 
     ## Clic derecho o escape responden "no".
     key "game_menu" action no_action
@@ -1533,10 +2024,10 @@ screen quick_menu():
             style "quick_menu"
             style_prefix "quick"
 
-            textbutton _("Atrás") action Rollback()
-            textbutton _("Saltar") action Skip() alternate Skip(fast=True, confirm=True)
-            textbutton _("Auto") action Preference("auto-forward", "toggle")
-            textbutton _("Menú") action ShowMenu()
+            textbutton _("◀ Atrás") action Rollback()
+            textbutton _("⏩ Saltar") action Skip() alternate Skip(fast=True, confirm=True)
+            textbutton _("▶ Auto") action Preference("auto-forward", "toggle")
+            textbutton _("⚙️ Menú") action ShowMenu()
 
 
 style window:
@@ -1606,14 +2097,18 @@ style vscrollbar:
 style slider:
     variant "small"
     ysize gui.slider_size
-    base_bar Frame("gui/phone/slider/horizontal_[prefix_]bar.png", gui.slider_borders, tile=gui.slider_tile)
+    left_bar Frame("gui/phone/slider/horizontal_[prefix_]left.png", gui.slider_borders, tile=gui.slider_tile)
+    right_bar Frame("gui/phone/slider/horizontal_[prefix_]right.png", gui.slider_borders, tile=gui.slider_tile)
     thumb "gui/phone/slider/horizontal_[prefix_]thumb.png"
+    thumb_offset 17
 
 style vslider:
     variant "small"
     xsize gui.slider_size
-    base_bar Frame("gui/phone/slider/vertical_[prefix_]bar.png", gui.vslider_borders, tile=gui.slider_tile)
+    top_bar Frame("gui/phone/slider/vertical_[prefix_]top.png", gui.vslider_borders, tile=gui.slider_tile)
+    bottom_bar Frame("gui/phone/slider/vertical_[prefix_]bottom.png", gui.vslider_borders, tile=gui.slider_tile)
     thumb "gui/phone/slider/vertical_[prefix_]thumb.png"
+    thumb_offset 17
 
 style slider_vbox:
     variant "small"

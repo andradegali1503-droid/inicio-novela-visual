@@ -97,7 +97,7 @@ define gui.game_menu_background = "gui/game_menu.png"
 ## línea cada vez.
 
 ## Altura de la caja de texto que contiene el diálogo.
-define gui.textbox_height = 278
+define gui.textbox_height = 280
 
 ## Colocación vertical de la caja de texto en la pantalla. 0.0 para la parte
 ## superior, 0.5 para el centro y 1.0 para la parte inferior.
@@ -105,10 +105,9 @@ define gui.textbox_yalign = 1.0
 
 
 ## Colocación del nombre del personaje hablante, relativa a la caja de texto.
-## Puede ser el númerode píxels desde la esquina superior izquierda, o 0.5 para
-## centrar.
-define gui.name_xpos = 360
-define gui.name_ypos = 0
+## Alineado sobre el margen izquierdo de la caja flotante moderna.
+define gui.name_xpos = 160
+define gui.name_ypos = -18
 
 ## La alineación horizontal del nombre del personaje. (0.0 es izquierda, 0.5 es
 ## centro, 1.0 es derecha).
@@ -117,24 +116,23 @@ define gui.name_xalign = 0.0
 ## La anchura, altura y bordes de la caja que contiene el nombre del personaje,
 ## o 'None' para dimensión automática.
 define gui.namebox_width = None
-define gui.namebox_height = None
+define gui.namebox_height = 56
 
 ## Los bordes de la caja que contiene el nombre del personaje, en orden:
 ## izquierda, arriba, derecha, abajo.
-define gui.namebox_borders = Borders(5, 5, 5, 5)
+define gui.namebox_borders = Borders(28, 8, 28, 8)
 
 ## Si es 'True, el fondo de la caja del nombre será en mosaico, si es 'False',
 ## el fondo, si la caja del nombre es escalada.
 define gui.namebox_tile = False
 
 
-## Colocación del diálogo relativa a la caja de texto. Puede ser el número de
-## píxels relativos a la esquina superor izquierda o 0.5 para centrar.
-define gui.dialogue_xpos = 402
-define gui.dialogue_ypos = 75
+## Colocación del diálogo relativa a la caja de texto. Espaciado amplio y moderno.
+define gui.dialogue_xpos = 185
+define gui.dialogue_ypos = 72
 
 ## La anchura máxima del texto del diálogo, en píxels.
-define gui.dialogue_width = 1116
+define gui.dialogue_width = 1550
 
 ## La alineación horizontal del texto del diálogo. (0.0 es izquierda, 0.5 es
 ## centro, 1.0 es derecha).
@@ -189,16 +187,18 @@ define gui.confirm_button_text_xalign = 0.5
 
 define gui.page_button_borders = Borders(15, 6, 15, 6)
 
-define gui.quick_button_borders = Borders(15, 6, 15, 0)
-define gui.quick_button_text_size = 21
-define gui.quick_button_text_idle_color = gui.idle_small_color
-define gui.quick_button_text_selected_color = gui.accent_color
+define gui.quick_button_borders = Borders(14, 6, 14, 6)
+define gui.quick_button_text_size = 17
+define gui.quick_button_text_idle_color = '#ffffff'
+define gui.quick_button_text_hover_color = '#ffd13b'
+define gui.quick_button_text_selected_color = '#ff85c0'
 
 ## Se pueden añadir personalizaciones propias con variables con los nombres
 ## adecuados. Por ejemplo, es posible descomentar la linea siguiente para
 ## ajustar la anchura de los botones de navegación.
 
-# define gui.navigation_button_width = 250
+define gui.navigation_button_width = 340
+define gui.navigation_button_borders = Borders(16, 8, 16, 8)
 
 
 ## Botones de opción ###########################################################
@@ -208,12 +208,12 @@ define gui.quick_button_text_selected_color = gui.accent_color
 define gui.choice_button_width = 1185
 define gui.choice_button_height = None
 define gui.choice_button_tile = False
-define gui.choice_button_borders = Borders(150, 8, 150, 8)
+define gui.choice_button_borders = Borders(50, 10, 50, 10)
 define gui.choice_button_text_font = gui.text_font
 define gui.choice_button_text_size = gui.text_size
 define gui.choice_button_text_xalign = 0.5
-define gui.choice_button_text_idle_color = '#888888'
-define gui.choice_button_text_hover_color = "#ffffff"
+define gui.choice_button_text_idle_color = '#ffffff'
+define gui.choice_button_text_hover_color = "#ffd166"
 define gui.choice_button_text_insensitive_color = '#8888887f'
 
 
@@ -226,12 +226,12 @@ define gui.choice_button_text_insensitive_color = '#8888887f'
 ## Botón de guardar partida
 define gui.slot_button_width = 414
 define gui.slot_button_height = 309
-define gui.slot_button_borders = Borders(15, 15, 15, 15)
-define gui.slot_button_text_size = 21
+define gui.slot_button_borders = Borders(18, 18, 18, 18)
+define gui.slot_button_text_size = 18
 define gui.slot_button_text_xalign = 0.5
-define gui.slot_button_text_idle_color = gui.idle_small_color
-define gui.slot_button_text_selected_idle_color = gui.selected_color
-define gui.slot_button_text_selected_hover_color = gui.hover_color
+define gui.slot_button_text_idle_color = '#ffffff'
+define gui.slot_button_text_selected_idle_color = '#ffd13b'
+define gui.slot_button_text_selected_hover_color = '#ff85c0'
 
 ## La anchura y altura de las miniaturas de las partidas guardadas.
 define config.thumbnail_width = 384
@@ -261,7 +261,7 @@ define gui.notify_ypos = 68
 define gui.choice_spacing = 33
 
 ## Botones en la sección de navegación del menú principal y el menú del juego.
-define gui.navigation_spacing = 6
+define gui.navigation_spacing = 8
 
 ## Controla el espacio entre preferencias.
 define gui.pref_spacing = 15
@@ -285,7 +285,7 @@ define gui.main_menu_text_xalign = 1.0
 ## componentes de la interfaz cuando no está presente una ventana.
 
 ## Marcos genéricos
-define gui.frame_borders = Borders(6, 6, 6, 6)
+define gui.frame_borders = Borders(24, 24, 24, 24)
 
 ## Marco usado en la pantalla de confirmación.
 define gui.confirm_frame_borders = Borders(60, 60, 60, 60)
@@ -311,9 +311,9 @@ define gui.frame_tile = False
 
 ## Altura de las barras, barras de deslizamiento y deslizadores horizontales.
 ## Anchura de barras, barras de deslizamiento y deslizadores verticales.
-define gui.bar_size = 38
-define gui.scrollbar_size = 18
-define gui.slider_size = 38
+define gui.bar_size = 28
+define gui.scrollbar_size = 16
+define gui.slider_size = 28
 
 ## 'True' si la imagen de las barras debe ser en mosaico. 'False' si deben ser
 ## escaladas linealmente.
@@ -322,14 +322,14 @@ define gui.scrollbar_tile = False
 define gui.slider_tile = False
 
 ## Bordes horizontales.
-define gui.bar_borders = Borders(6, 6, 6, 6)
-define gui.scrollbar_borders = Borders(6, 6, 6, 6)
-define gui.slider_borders = Borders(6, 6, 6, 6)
+define gui.bar_borders = Borders(10, 4, 10, 4)
+define gui.scrollbar_borders = Borders(6, 4, 6, 4)
+define gui.slider_borders = Borders(11, 4, 11, 4)
 
 ## Bordes verticales.
-define gui.vbar_borders = Borders(6, 6, 6, 6)
-define gui.vscrollbar_borders = Borders(6, 6, 6, 6)
-define gui.vslider_borders = Borders(6, 6, 6, 6)
+define gui.vbar_borders = Borders(4, 10, 4, 10)
+define gui.vscrollbar_borders = Borders(4, 6, 4, 6)
+define gui.vslider_borders = Borders(4, 11, 4, 11)
 
 ## Qué hacer con las barras de desplazamiento no desplegables en el menú del
 ## juego. "hide" las oculta, mientras que None las muestra.
@@ -345,10 +345,10 @@ define config.history_length = 250
 
 ## Altura de una entrada de la pantalla de historial, o 'None' para altura
 ## variable a costa de rendimiento.
-define gui.history_height = 210
+define gui.history_height = None
 
 ## Espacio adicional para añadir entre las entradas de la pantalla de historial.
-define gui.history_spacing = 0
+define gui.history_spacing = 12
 
 ## Posición, anchura y alineación de la etiqueta con el nombre del personaje
 ## hablante.

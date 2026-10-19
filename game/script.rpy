@@ -80,10 +80,14 @@ define narrador = Character(None, what_italic=True, what_color="#e2eafc")
 ################################################################################
 
 label start:
+    play music "audio/bgm_campus.wav" fadein 1.5
+    play sound "audio/sfx_bell.wav"
     $ mostrar_hud = True
     show screen stats_hud
 
-    scene bg courtyard with fade
+    scene bg courtyard with trans_romance_gold
+    show sakura_petals
+    $ anunciar_lugar("PATIO CENTRAL DE LOS CEREZOS", "Entrada Principal • Jardines de Primavera", "🌸")
 
     narrador "Instituto Privado Sakura. Último día de preparativos antes del gran Festival Cultural de Otoño."
     narrador "Para la mayoría de los estudiantes, hoy es un día de emoción, romances inocentes y puestos de comida..."
@@ -114,9 +118,8 @@ label start:
             $ registrar_rama("Talento: Espíritu Honorable", "Comenzaste ganándote el respeto del instituto.", "+15% Reputación")
             leo "Aunque todo salga al revés, siempre cumplo mis promesas hasta el final."
 
-    show hana wink at enter_right
+    show hana wink at enter_right, genki_hop
     with dissolve
-    show hana wink at happy_bounce
     $ mostrar_reaccion("sparkle", "right")
 
     hana "¡Eh, [nombre_prota]! ¡Buenos días! ¿Ya estás cargando todas esas cajas tú solo?"
@@ -126,7 +129,9 @@ label start:
     $ mostrar_reaccion("music", "right")
     hana "¡Jajaja, típico de ti! ¡Ven, te abro las puertas del edificio principal para que tomes el atajo!"
 
-    scene bg council at camera_shake with vpunch
+    scene bg council at comic_trip with trans_shock_flash
+    with vpunch
+    $ anunciar_lugar("SALA DEL CONSEJO ESTUDIANTIL", "Edificio Principal, 2º Piso • Presidencia de Akane", "🏫")
 
     narrador "¡CRASH! ¡BUM! ¡CATAPUM!"
     narrador "Al doblar la esquina a toda velocidad, tropiezas con una alfombra recién encerada y entras volando como un meteorito directamente en la Sala del Consejo Estudiantil."
@@ -137,10 +142,10 @@ label start:
     with dissolve
 
     $ mostrar_reaccion("shock", "left", "shock")
-    show akane angry at pos_left, anger_shake
+    show akane angry at pos_left, tsundere_strike
     akane "¡¿PERO QUÉ DEMONIOS ESTÁ PASANDO AQUÍ?!"
 
-    show yuki thinking at pos_center, surprised_pop
+    show yuki thinking at pos_center, kuudere_tilt
     $ mostrar_reaccion("question", "center")
     yuki "Alerta crítica. La torre de cajas del presupuesto, los permisos del festival y mi proyector holográfico están perdiendo el equilibrio..."
 
@@ -171,7 +176,7 @@ label start:
 
         leo "¡Cuidado, Presidenta!"
         narrador "Rodeas a Akane con tus brazos y detienes la caja más pesada con el hombro, quedando a pocos centímetros de su rostro y sintiendo su aliento entrecortado."
-        show akane love at pos_left, heartbeat_throb
+        show akane love at pos_left, doki_zoom, heartbeat_throb with trans_doki
         $ mostrar_reaccion("hearts", "left", "romance")
         akane "¡¿Eh?! ¡O-oye! ¡Estás demasiado cerca, idiota...! Mi corazón va a estallar... Pe-pero gracias por salvarme."
         show akane pout at pos_left, fluster_wobble
@@ -185,7 +190,7 @@ label start:
 
         leo "¡El proyector no toca el suelo mientras yo esté aquí!"
         narrador "Deslizas las rodillas por el parqué y atrapas el delicado cristal de Yuki a un centímetro del suelo, entrelazando tus dedos con su mano fría."
-        show yuki love at pos_center, heartbeat_throb
+        show yuki love at pos_center, doki_zoom, heartbeat_throb with trans_romance_cyan
         $ mostrar_reaccion("hearts", "center", "romance")
         yuki "Mis pulsaciones acaban de subir un 42 por ciento... Tu mano es sorprendentemente cálida, [nombre_prota]."
         show yuki shy at pos_center, shy_sink
@@ -199,13 +204,13 @@ label start:
 
         leo "¡Hana, detrás de mí!"
         narrador "Abrazas a Hana por los hombros para cubrirla y recibes una lluvia de serpentinas y carpetas sobre la espalda."
-        show hana love at pos_right, heartbeat_throb
+        show hana love at pos_right, doki_zoom, heartbeat_throb with trans_romance_gold
         $ mostrar_reaccion("hearts", "right", "romance")
         hana "¡[nombre_prota]! ¡Me abrazaste tan fuerte que se me paró el corazón por un segundo! ¡Estuviste como un héroe de película!"
         show hana happy at pos_right, happy_bounce
 
     else:
-        scene bg council at camera_shake with hpunch
+        scene bg council at camera_shake with trans_disaster
         show akane surprised at pos_left, anger_shake
         show yuki surprised at pos_center
         show hana sad at pos_right
@@ -248,6 +253,7 @@ label start:
             akane "M-más te vale cumplir esa promesa... Confiamos en ti, [nombre_prota]."
 
         "«Bueno... si tengo que usar mis encantos con esas tres chicas para salvar el festival, ¡me sacrificaré por el equipo!»":
+            $ consecuencia_jugando_con_fuego = True
             $ cambiar_stat("carisma", 10, "Espíritu seductor")
             $ cambiar_tentacion("kuroe", 10, "Actitud atrevida")
             $ cambiar_tentacion("mirei", 10, "Actitud atrevida")
@@ -273,7 +279,8 @@ label start:
 ################################################################################
 
 label hub_instituto:
-    scene bg courtyard with dissolve
+    scene bg courtyard with trans_map_slide_left
+    show sakura_petals
 
     call screen school_hub_selector
     $ destino_elegido = _return
@@ -293,7 +300,8 @@ label confirmar_ir_festival:
         narrador "🎯 **Objetivo actual de la trama:** [o_txt]."
         jump hub_instituto
     elif len(pendientes_sub) > 0:
-        narrador "🔥 ¡ATENCIÓN! Te has enredado en aventuras ardientes con: **[', '.join(pendientes_sub)]**."
+        $ sub_pendientes_texto = obtener_texto_sub_pendientes()
+        narrador "🔥 ¡ATENCIÓN! Te has enredado en aventuras ardientes con: **[sub_pendientes_texto]**."
         narrador "Para poder finalizar la historia principal con Akane, Yuki o Hana, **debes terminar tu aventura con las sub-personajes** antes de que empiece la ceremonia (o enfrentarte a ellas ahora mismo)."
         menu:
             "🗺️ Ir por el mapa a terminar con ellas en sus zonas antes del festival":
@@ -315,7 +323,8 @@ label confirmar_ir_festival:
 
 label zona_consejo:
     $ zonas_exploradas.add("consejo")
-    scene bg council with dissolve
+    $ anunciar_lugar("SALA DEL CONSEJO ESTUDIANTIL", "Edificio Principal, 2º Piso • Presidencia de Akane", "🏫")
+    scene bg council with trans_council
 
     if visitado_akane:
         if afinidad_akane >= 50:
@@ -345,7 +354,7 @@ label zona_consejo:
                 $ mostrar_reaccion("shock", "center", "shock")
                 leo "Akane, conseguí que Kuroe me devolviera las carpetas que faltaban del Consejo."
                 akane "¡¿Qué?! ¡¿Lograste que esa rebelde imposible entrara en razón?!"
-                show akane love at closeup_romance, heartbeat_throb
+                show akane love at closeup_romance, doki_zoom, heartbeat_throb with trans_romance_pink
                 $ mostrar_reaccion("hearts", "center", "romance")
                 akane "N-no sé cómo lo hiciste, [nombre_prota], ¡pero me has salvado la vida! Por un segundo pensé que... bueno, ¡gracias!"
                 akane "Con esto ya tengo el permiso firmado para abrirte el **Laboratorio de Ciencias del Ala Este**. ¡Ve a ayudar a **Yuki Shirogane** con el proyector holográfico!"
@@ -376,8 +385,17 @@ label zona_consejo:
 
 
 label charlar_con_akane:
+    $ num_charla_akane = registrar_charla("akane")
     show akane normal at pos_center
-    akane "¿Qué pasa, [nombre_prota]? Me estás mirando mucho... ¿Necesitas algo o solo vienes a distraerme?"
+    if num_charla_akane > 1:
+        show akane blush at pos_center, fluster_wobble
+        akane "¿Otra vez por aquí, [nombre_prota]? Si sigues buscando excusas para venir a la Sala del Consejo van a empezar a correr rumores..."
+        if consecuencia_culpa_asumida:
+            akane "(Aunque... sé que te tomaste muy en serio la promesa que nos hiciste en el patio esta mañana)."
+        elif consecuencia_jugando_con_fuego:
+            akane "(¡Y más te vale no haber ido a tontear con Kuroe en la Biblioteca antes de venir a verme!)"
+    else:
+        akane "¿Qué pasa, [nombre_prota]? Me estás mirando mucho... ¿Necesitas algo o solo vienes a distraerme?"
     menu:
         "💖 Elogiar lo guapa que está con sus coletas rojas y su uniforme (+10%% ♥ Akane)":
             if afinidad_akane < 65:
@@ -429,7 +447,8 @@ label zona_laboratorio:
         jump hub_instituto
 
     $ zonas_exploradas.add("laboratorio")
-    scene bg classroom with dissolve
+    $ anunciar_lugar("LABORATORIO DE CIENCIAS", "Edificio Este, Ala de Investigación • Yuki Shirogane", "🔬")
+    scene bg classroom with trans_lab
 
     if not visitado_yuki:
         show yuki thinking at enter_center
@@ -473,7 +492,7 @@ label zona_laboratorio:
                 show yuki surprised at pos_left, surprised_pop
                 $ mostrar_reaccion("sparkle", "left")
                 leo "Yuki, conseguí la bobina superconductora del almacén de química."
-                show yuki love at pos_left, heartbeat_throb
+                show yuki love at pos_left, doki_zoom, heartbeat_throb with trans_romance_cyan
                 $ mostrar_reaccion("hearts", "left", "romance")
                 yuki "Increíble... Mirei nunca se la presta a nadie sin pedir algo turbio a cambio. Espero que no te haya hecho nada extraño, [nombre_prota]."
                 yuki "Con el proyector conectado a la red principal, ya se ha desbloqueado el cierre electrónico de la **Azotea del Instituto**. ¡Sube a ayudar a **Hana Sakuragi**!"
@@ -504,9 +523,19 @@ label zona_laboratorio:
 
 
 label charlar_con_yuki:
+    $ num_charla_yuki = registrar_charla("yuki")
     show yuki thinking at pos_left
     $ mostrar_reaccion("question", "left")
-    yuki "¿Deseas realizar una consulta adicional, [nombre_prota]? Mis sensores detectan que te estás acercando más de lo habitual."
+    if num_charla_yuki > 1:
+        show yuki shy at pos_left, fluster_wobble
+        yuki "Frecuencia de visitas de [nombre_prota] superior a la media estadística esperada."
+        if consecuencia_culpa_asumida:
+            yuki "Tus acciones corresponden con el juramento de lealtad que hiciste esta mañana en el patio."
+        elif consecuencia_jugando_con_fuego:
+            yuki "Advertencia: detecto posibles distracciones hormonales en tu campo visual. Concéntrate en nuestras ecuaciones."
+        yuki "No obstante... me alegra tenerte cerca."
+    else:
+        yuki "¿Deseas realizar una consulta adicional, [nombre_prota]? Mis sensores detectan que te estás acercando más de lo habitual."
     menu:
         "💖 Acariciar su mejilla y decirle que su sonrisa vale más que cualquier galaxia (+10%% ♥ Yuki)":
             if afinidad_yuki < 65:
@@ -542,9 +571,13 @@ label charlar_con_yuki:
 
 
 label charlar_con_mirei:
+    $ num_charla_mirei = registrar_charla("mirei")
     show mirei teasing at pos_right, seductive_sway
     $ mostrar_reaccion("lust", "right", "darkness")
-    mirei "Ara, ara~ ¿Me miras de reojo mientras Yuki está distraída, [nombre_prota]?"
+    if num_charla_mirei > 1:
+        mirei "Ara, ara~ Otra visita furtiva a mi trastienda. Mis reactivos indican que tu pulso se acelera cada vez que cruzas esa puerta..."
+    else:
+        mirei "Ara, ara~ ¿Me miras de reojo mientras Yuki está distraída, [nombre_prota]?"
     menu:
         "🔥 Sostenerle la mirada y decirle que su bata de laboratorio le queda peligrosamente bien (+10%% 🔥 Mirei)":
             $ cambiar_tentacion("mirei", 10, "Tensión en el laboratorio")
@@ -573,7 +606,9 @@ label zona_azotea:
         jump hub_instituto
 
     $ zonas_exploradas.add("azotea")
-    scene bg rooftop with dissolve
+    $ anunciar_lugar("AZOTEA DEL INSTITUTO SAKURA", "Mirador Panorámico y Pistas • Hana Sakuragi", "🌤️")
+    scene bg rooftop with trans_sunset
+    show sakura_petals
 
     if visitado_hana:
         if afinidad_hana >= 55:
@@ -600,7 +635,7 @@ label zona_azotea:
                 show hana wink at pos_center, surprised_pop
                 $ mostrar_reaccion("sparkle", "center")
                 leo "¡Mira, Hana! Conseguí que Reina firmara el permiso para que actuemos en pareja sin que el ojeador te descalifique."
-                show hana love at closeup_romance, excited_jump
+                show hana love at closeup_romance, doki_zoom, heartbeat_throb with trans_romance_gold
                 $ mostrar_reaccion("hearts", "center", "romance")
                 hana "¡¿En serio?! ¡Con lo exigente y peligrosa que es Reina! ¡Te quiero muchísimo, [nombre_prota], eres mi salvador!"
                 if estado_sub_reina == "Enredado" and not ruptura_sub_reina:
@@ -630,9 +665,18 @@ label zona_azotea:
 
 
 label charlar_con_hana:
+    $ num_charla_hana = registrar_charla("hana")
     show hana wink at pos_center, happy_bounce
     $ mostrar_reaccion("music", "center")
-    hana "¡Jejeje! El viento de la azotea sienta genial cuando estás aquí conmigo, [nombre_prota]. ¿Qué te apetece hacer?"
+    if num_charla_hana > 1:
+        show hana happy at pos_center, excited_jump
+        hana "¡[nombre_prota]! ¡Sabía que volverías a subir a la azotea a verme! ¡Cada vez que te veo me olvido por completo del tobillo!"
+        if consecuencia_culpa_asumida:
+            hana "¡Eres el chico más noble y confiable de todo el instituto, de verdad!"
+        elif consecuencia_jugando_con_fuego:
+            hana "¡Aunque ten cuidado con Reina en los vestuarios! ¡Si te dejas seducir me enfadaré un montón!"
+    else:
+        hana "¡Jejeje! El viento de la azotea sienta genial cuando estás aquí conmigo, [nombre_prota]. ¿Qué te apetece hacer?"
     menu:
         "💖 Abrazarla por la cintura para practicar el paso final del baile (+10%% ♥ Hana)":
             if afinidad_hana < 65:
@@ -678,12 +722,13 @@ label zona_biblioteca:
         jump hub_instituto
 
     $ zonas_exploradas.add("biblioteca")
-    scene bg library with dissolve
+    $ anunciar_lugar("BIBLIOTECA OESTE", "Ala Silenciosa y Archivo • Dominio de Kuroe Sakamoto", "📚")
+    scene bg library with trans_darkness
 
     if tentacion_kuroe >= 50:
-        show kuroe passion at enter_center
+        show kuroe passion at enter_center, seductive_sway
     else:
-        show kuroe teasing at enter_center
+        show kuroe teasing at enter_center, seductive_sway
     with dissolve
 
     narrador "📍 Estás en la **Biblioteca y Rincón Rebelde** (Ala Oeste). Al fondo, entre las estanterías oscuras donde nadie estudia, **Kuroe Sakamoto** —la chica mala del instituto— juega con la corbata floja y una sonrisa provocadora."
@@ -720,9 +765,17 @@ label zona_biblioteca:
 
 
 label charlar_con_kuroe:
+    $ num_charla_kuroe = registrar_charla("kuroe")
     show kuroe teasing at pos_center, seductive_sway
     $ mostrar_reaccion("lust", "center", "darkness")
-    kuroe "¿Qué pasa, chico bueno? ¿Vienes al rincón oscuro de la biblioteca porque echas de menos el peligro?"
+    if num_charla_kuroe > 1:
+        kuroe "¿Otra vez rondando mis estanterías? Parece que el chico bueno no puede pasar ni una hora sin su dosis de peligro."
+        if consecuencia_culpa_asumida:
+            kuroe "Mucho jurarle honor a tus amiguitas en el patio, pero a la primera de cambio vienes corriendo a mi rincón."
+        elif consecuencia_jugando_con_fuego:
+            kuroe "Dijiste que te sacrificarías con nosotras... me gusta un chico que sabe divertirse sin tanta hipocresía."
+    else:
+        kuroe "¿Qué pasa, chico bueno? ¿Vienes al rincón oscuro de la biblioteca porque echas de menos el peligro?"
     menu:
         "💖 Acorralarla a ella contra la estantería y decirle que en el fondo es adorable cuando se sonroja (+10%% 🔥 Kuroe)":
             $ cambiar_tentacion("kuroe", 10, "¡La desarmaste!")
@@ -750,7 +803,9 @@ label charlar_con_kuroe:
 
 label zona_patio:
     $ zonas_exploradas.add("patio")
-    scene bg courtyard with dissolve
+    $ anunciar_lugar("PATIO CENTRAL Y FAROLILLOS", "Plaza Central • Escenario del Festival", "🌸")
+    scene bg courtyard with loc_transition
+    show sakura_petals
 
     narrador "📍 Estás en el **Patio Central de los Cerezos**. El escenario principal del festival ya casi está listo."
 
@@ -783,12 +838,13 @@ label zona_cafeteria:
         jump hub_instituto
 
     $ zonas_exploradas.add("cafeteria")
-    scene bg courtyard with dissolve
+    $ anunciar_lugar("CAFETERÍA Y VESTUARIOS DEPORTIVOS", "Zona Recreativa Sur • Reina Kurokawa", "☕")
+    scene bg courtyard with trans_darkness_gym
 
     if tentacion_reina >= 50:
-        show reina passion at enter_center
+        show reina passion at enter_center, seductive_sway
     else:
-        show reina teasing at enter_center
+        show reina teasing at enter_center, seductive_sway
     with dissolve
 
     narrador "📍 Estás en la **Cafetería y Vestuarios del Jardín Sur**. Apoyada contra la entrada de las duchas del Club de Educación Física está **Reina Kurokawa**, luciendo su figura atlética bronceada y una sonrisa desafiante."
@@ -824,9 +880,17 @@ label zona_cafeteria:
 
 
 label charlar_con_reina:
+    $ num_charla_reina = registrar_charla("reina")
     show reina teasing at pos_center, seductive_sway
     $ mostrar_reaccion("lust", "center", "darkness")
-    reina "Vaya, campeón... ¿Vienes por otra sesión de estiramientos privados en los vestuarios?"
+    if num_charla_reina > 1:
+        reina "¡Vaya, el campeón no se cansa de visitar los vestuarios! Me gusta esa resistencia aeróbica..."
+        if consecuencia_culpa_asumida:
+            reina "Aunque se nota que intentas mantener la compostura por esa promesa tan santa que hiciste esta mañana."
+        elif consecuencia_jugando_con_fuego:
+            reina "Se nota que cuando dijiste que te sacrificarías con nosotras hablabas muy en serio, pillín."
+    else:
+        reina "Vaya, campeón... ¿Vienes por otra sesión de estiramientos privados en los vestuarios?"
     menu:
         "💖 Elogiar su dedicación como capitana y tomar su mano con suavidad (+10%% 🔥 Reina)":
             $ cambiar_tentacion("reina", 10, "Lado vulnerable de Reina")
@@ -855,8 +919,8 @@ label charlar_con_reina:
 ## --- SUB-RUTA 1: KUROE SAKAMOTO (LA CHICA MALA QUE ODIA ESTUDIAR -> RUTA AKANE) ---
 label sub_evento_kuroe:
     $ encuentro_sub_kuroe = True
-    scene bg library with dissolve
-    show kuroe teasing at closeup_romance, seductive_sway
+    scene bg library with trans_darkness
+    show kuroe teasing at closeup_romance, sway_temptation
     $ mostrar_reaccion("lust", "center", "darkness")
 
     kuroe "Vaya, vaya... Así que tú eres el famoso [nombre_prota], el chico de los recados de la estirada de Akane."
@@ -940,8 +1004,9 @@ label terminar_con_kuroe:
 ## --- SUB-RUTA 2: MIREI KANZAKI (CLUB DE CIENCIAS -> RUTA YUKI) ---
 label sub_evento_mirei:
     $ encuentro_sub_mirei = True
-    scene bg classroom with dissolve
-    show mirei teasing at closeup_romance, seductive_sway
+    $ anunciar_lugar("ALMACÉN QUÍMICO RESTRINGIDO", "Laboratorio Privado • Sempai Mirei Kanzaki", "🧪")
+    scene bg classroom with trans_darkness_lab
+    show mirei teasing at closeup_romance, sway_temptation
     $ mostrar_reaccion("lust", "center", "darkness")
 
     mirei "Ara, ara~ Cierra la puerta del almacén con seguro, [nombre_prota]. Yuki está tan concentrada en sus ecuaciones que no escuchará nada..."
@@ -1022,8 +1087,8 @@ label terminar_con_mirei:
 ## --- SUB-RUTA 3: REINA KUROKAWA (CLUB DE EDUCACIÓN FÍSICA -> RUTA HANA) ---
 label sub_evento_reina:
     $ encuentro_sub_reina = True
-    scene bg courtyard with dissolve
-    show reina teasing at closeup_romance, seductive_sway
+    scene bg courtyard with trans_darkness_gym
+    show reina teasing at closeup_romance, sway_temptation
     $ mostrar_reaccion("lust", "center", "darkness")
 
     reina "Vaya, [nombre_prota]... Justo el chico que estaba buscando. Entra un momento a los vestuarios, no muerdo... a menos que me lo pidas."
@@ -1365,7 +1430,12 @@ label verificar_rupturas_antes_climax:
         show kuroe passion at enter_center, seductive_sway
         $ mostrar_reaccion("lust", "center", "darkness")
         narrador "Antes de que puedas llegar al escenario principal con Akane, **Kuroe Sakamoto** te intercepta detrás de las carpas del festival y te acorrala contra la pared."
-        kuroe "¿A dónde crees que vas, [nombre_prota]? Después de lo que hicimos en la biblioteca, no pensarás irte con la presidenta como si nada..."
+        if consecuencia_culpa_asumida:
+            kuroe "Vaya, vaya con el chico de la 'promesa de honor'... Juraste lealtad a tus santitas en el patio, pero en la biblioteca caíste en mis brazos como fruta madura."
+        elif consecuencia_jugando_con_fuego:
+            kuroe "Dijiste esta mañana que te 'sacrificarías' por el equipo con nosotras... ¡y ahora no pensarás marcharte al escenario como si nuestro beso no hubiera existido!"
+        else:
+            kuroe "¿A dónde crees que vas, [nombre_prota]? Después de lo que hicimos en la biblioteca, no pensarás irte con la presidenta como si nada..."
         menu:
             "💔 Terminar con Kuroe ahora mismo con firmeza para poder ir con las heroínas principales":
                 $ ruptura_sub_kuroe = True
@@ -1386,7 +1456,12 @@ label verificar_rupturas_antes_climax:
         show mirei passion at enter_center, seductive_sway
         $ mostrar_reaccion("lust", "center", "darkness")
         narrador "Al pasar junto a la carpa de control técnico, la sempai **Mirei Kanzaki** te toma de la mano y tira de ti hacia las sombras."
-        mirei "Ara, ara~ ¿De verdad pensabas dejar a tu sempai sola después de nuestro pequeño experimento en el almacén químico?"
+        if consecuencia_culpa_asumida:
+            mirei "Ara, ara~ ¿Dónde quedó esa hermosa promesa de no dejarte desviar por las tentaciones? En el almacén químico tu respiración decía otra cosa..."
+        elif consecuencia_jugando_con_fuego:
+            mirei "Tu 'sacrificio' en el almacén fue tan delicioso que todavía quiero analizar los efectos de la reacción toda la noche..."
+        else:
+            mirei "Ara, ara~ ¿De verdad pensabas dejar a tu sempai sola después de nuestro pequeño experimento en el almacén químico?"
         menu:
             "💔 Terminar con Mirei definitivamente para proteger a Yuki y la historia principal":
                 $ ruptura_sub_mirei = True
@@ -1407,7 +1482,12 @@ label verificar_rupturas_antes_climax:
         show reina passion at enter_center, seductive_sway
         $ mostrar_reaccion("lust", "center", "darkness")
         narrador "Detrás de las gradas deportivas, **Reina Kurokawa** te cierra el paso con una sonrisa ardiente y dominante."
-        reina "Eh, campeón. Te di el pase para Hana en los vestuarios, y ahora toca cobrarme la segunda parte de nuestro trato a solas."
+        if consecuencia_culpa_asumida:
+            reina "¡Menudo juramento de pureza hiciste en el patio, campeón! Pero en las taquillas bien que te ardían las manos sobre mi cintura."
+        elif consecuencia_jugando_con_fuego:
+            reina "¡Prometiste sacrificarte con las chicas más ardientes del instituto y vaya si cumpliste en el vestuario! Pero aún nos queda el segundo tiempo..."
+        else:
+            reina "Eh, campeón. Te di el pase para Hana en los vestuarios, y ahora toca cobrarme la segunda parte de nuestro trato a solas."
         menu:
             "💔 Terminar con Reina con determinación para no traicionar a Hana":
                 $ ruptura_sub_reina = True
@@ -1436,7 +1516,10 @@ label climax_festival:
         jump verificar_rupturas_antes_climax
 
     $ climax_completado = True
-    scene bg festival with fade
+    play music "audio/bgm_festival.wav" fadein 1.5
+    $ anunciar_lugar("PLAZA CENTRAL DEL FESTIVAL", "Gran Clímax Nocturno • Noche de Fuegos Artificiales", "🏮")
+    scene bg festival with trans_festival
+    show sakura_petals
 
     narrador "La noche cae sobre el Instituto Sakura. Cientos de farolillos de papel iluminan el patio mientras la multitud se reúne frente al escenario principal."
 
@@ -1459,6 +1542,10 @@ label climax_festival:
         $ mostrar_reaccion("hearts", "center", "romance")
 
         narrador "¡Con las misiones de Akane, Yuki y Hana completadas y tras haber cerrado tus peligrosos enredos con las sub-personajes, el Festival Cultural estalla en un triunfo histórico!"
+        if consecuencia_culpa_asumida:
+            akane "Cumpliste tu palabra de honor, [nombre_prota]... Dijiste que no dejarías que ninguna tentación te desviara y has estado a la altura de cada una de nosotras."
+        elif consecuencia_jugando_con_fuego:
+            akane "Admito que cuando dijiste que te 'sacrificarías' con esas tres temí lo peor... pero al final tu corazón eligió estar aquí con nosotras. Gracias por volver."
         hana "¡Miren a la multitud! ¡Todo el instituto está coreando tu nombre, [nombre_prota]!"
         yuki "Probabilidad de éxito superada. Has demostrado una lealtad y un ingenio admirables."
         akane "B-bueno... supongo que tendré que retirar tu orden de expulsión y darte una medalla de honor."
@@ -1473,7 +1560,8 @@ label climax_festival:
         akane "No ha sido perfecto, pero sin tu ayuda habría sido una catástrofe. Buen trabajo, [nombre_prota]."
 
     else:
-        scene bg festival at camera_shake with vpunch
+        scene bg festival at camera_shake with trans_disaster
+        with vpunch
         show akane angry at pos_left, anger_shake
         show hana sad at pos_right
         $ mostrar_reaccion("anger", "left", "shock")
@@ -1505,16 +1593,17 @@ label eleccion_final:
 
 label final_akane:
     $ climax_completado = True
-    $ finales_vistos.add("akane")
-    scene bg festival with dissolve
+    $ registrar_final("akane")
+    scene bg festival with trans_romance_pink
     hide yuki
     hide hana
     if afinidad_akane >= 50:
+        play sound "audio/sfx_applause.wav"
         show akane blush at enter_center
         show akane pout at closeup_romance, fluster_wobble
         $ mostrar_reaccion("sweat", "center")
         akane "Pensé que no vendrías, tonto... Y me alegra saber que ni siquiera una rebelde como Kuroe pudo apartarte de mi lado."
-        show akane love at lean_in_close, heartbeat_throb
+        show akane love at lean_in_close, doki_zoom, heartbeat_throb
         $ mostrar_reaccion("hearts", "center", "romance")
         akane "Siempre creí que tenía que llevar todo el peso del instituto yo sola... hasta que llegaste tú y me enseñaste a confiar."
         akane "N-no te confundas... ¡solo te nombro mi vicepresidente personal porque te quiero solo para mí!"
@@ -1529,16 +1618,17 @@ label final_akane:
 
 label final_yuki:
     $ climax_completado = True
-    $ finales_vistos.add("yuki")
-    scene bg festival with dissolve
+    $ registrar_final("yuki")
+    scene bg festival with trans_romance_cyan
     hide akane
     hide hana
     if afinidad_yuki >= 50:
+        play sound "audio/sfx_applause.wav"
         show yuki thinking at enter_center
         show yuki shy at closeup_romance, fluster_wobble
         $ mostrar_reaccion("sparkle", "center")
         yuki "He analizado mil variables distintas esta noche, [nombre_prota], y todas llegan a la misma conclusión."
-        show yuki love at lean_in_close, heartbeat_throb
+        show yuki love at lean_in_close, doki_zoom, heartbeat_throb
         $ mostrar_reaccion("hearts", "center", "romance")
         yuki "Ni siquiera los juegos de seducción de Mirei pudieron alterar la química real que existe entre tú y yo. No quiero que nuestra historia termine nunca."
         leo "Entonces sigamos escribiendo nuestra historia juntos, Yuki."
@@ -1552,16 +1642,18 @@ label final_yuki:
 
 label final_hana:
     $ climax_completado = True
-    $ finales_vistos.add("hana")
-    scene bg festival with dissolve
+    $ registrar_final("hana")
+    scene bg festival with trans_romance_gold
+    show sakura_petals
     hide akane
     hide yuki
     if afinidad_hana >= 50:
+        play sound "audio/sfx_applause.wav"
         show hana wink at enter_center
         show hana shy at closeup_romance, fluster_wobble
         $ mostrar_reaccion("sparkle", "center")
         hana "¡Viniste, [nombre_prota]! ¡Sabía que cumplirías nuestra promesa a pesar de las tentaciones de Reina!"
-        show hana love at lean_in_close, heartbeat_throb
+        show hana love at lean_in_close, doki_zoom, heartbeat_throb
         $ mostrar_reaccion("hearts", "center", "romance")
         hana "Dicen que si estás con la persona que amas cuando estalla el último fuego artificial del festival, estaréis juntos para siempre..."
         hana "¡Y yo no cambiaría este abrazo contigo por ningún trofeo del mundo!"
@@ -1576,12 +1668,14 @@ label final_hana:
 
 label final_harem:
     $ climax_completado = True
-    $ finales_vistos.add("harem")
-    scene bg festival with flash
+    $ registrar_final("harem")
+    play sound "audio/sfx_applause.wav"
+    scene bg festival with trans_shock_flash
+    show sakura_petals
     show akane surprised at enter_left, surprised_pop
     show yuki surprised at enter_center, surprised_pop
     show hana shy at enter_right, surprised_pop
-    with dissolve
+    with trans_fireworks_flash
     $ mostrar_reaccion("shock", "center", "shock")
 
     hana "¡¿Eh?! ¡¿Akane y Yuki también tenían una cita contigo aquí?!"
@@ -1604,9 +1698,10 @@ label final_harem:
 
 label final_tentacion_kuroe:
     $ climax_completado = True
-    $ finales_vistos.add("kuroe")
-    scene bg library with fade
-    show kuroe passion at enter_center, lean_in_close
+    $ registrar_final("kuroe")
+    play sound "audio/sfx_heartbeat.wav"
+    scene bg library with trans_darkness
+    show kuroe passion at enter_center, lean_in_close, doki_zoom, heartbeat_throb
     $ mostrar_reaccion("lust", "center", "darkness")
     kuroe "Sabía que no podrías decirme adiós, chico malo... Deja que Akane se ocupe de su aburrido festival."
     kuroe "Esta noche la biblioteca entera es solo para nosotros dos..."
@@ -1615,9 +1710,10 @@ label final_tentacion_kuroe:
 
 label final_tentacion_mirei:
     $ climax_completado = True
-    $ finales_vistos.add("mirei")
-    scene bg classroom with fade
-    show mirei passion at enter_center, lean_in_close
+    $ registrar_final("mirei")
+    play sound "audio/sfx_heartbeat.wav"
+    scene bg classroom with trans_darkness_lab
+    show mirei passion at enter_center, lean_in_close, doki_zoom, heartbeat_throb
     $ mostrar_reaccion("lust", "center", "darkness")
     mirei "Ara, ara~ Qué decisión tan deliciosa, [nombre_prota]. Mientras el resto del instituto mira los fuegos artificiales, tú y yo haremos saltar chispas en el laboratorio toda la noche."
     narrador "🔥 FINAL DE TENTACIÓN DESBLOQUEADO: RUTA PROHIBIDA DE MIREI — «Experimento Nocturno de Lujuria» 🔥\n(Para ver los Finales Principales, recuerda terminar con las sub-personajes a tiempo)."
@@ -1625,9 +1721,10 @@ label final_tentacion_mirei:
 
 label final_tentacion_reina:
     $ climax_completado = True
-    $ finales_vistos.add("reina")
-    scene bg courtyard with fade
-    show reina passion at enter_center, lean_in_close
+    $ registrar_final("reina")
+    play sound "audio/sfx_heartbeat.wav"
+    scene bg courtyard with trans_darkness_gym
+    show reina passion at enter_center, lean_in_close, doki_zoom, heartbeat_throb
     $ mostrar_reaccion("lust", "center", "darkness")
     reina "¡Así me gusta, campeón! Sabía que no podrías olvidar el calor de los vestuarios. Esta noche vas a necesitar toda tu resistencia física conmigo."
     narrador "🔥 FINAL DE TENTACIÓN DESBLOQUEADO: RUTA PROHIBIDA DE REINA — «Entrenamiento Privado sin Límites» 🔥\n(Para ver los Finales Principales, recuerda terminar con las sub-personajes a tiempo)."
@@ -1635,9 +1732,13 @@ label final_tentacion_reina:
 
 
 label pantalla_resumen_final:
-    narrador "Haz clic en el botón **🏆 Progreso ([calcular_progreso_total()]%%)** de la barra superior para ver exactamente qué te falta para obtener el **100%% del Juego Completo**."
+    narrador "Haz clic en el botón **🏆 Progreso ([calcular_progreso_total()]%%)** o en **🎬 Finales** de la barra superior para ver exactamente qué te falta para obtener el **100%% del Juego Completo**."
 
     menu:
+        "🎬 Abrir Sala de Recuerdos y Galería de Finales ([len(finales_vistos)]/7 Desbloqueados)":
+            call screen endings_gallery_modal
+            jump pantalla_resumen_final
+
         "🏆 Abrir Panel de Progreso Total de la Partida ([calcular_progreso_total()]%% / 100%%)":
             call screen game_progress_modal
             jump pantalla_resumen_final
@@ -1652,6 +1753,7 @@ label pantalla_resumen_final:
             jump eleccion_final
 
         "🗺️ Volver al Mapa Libre del Instituto para completar objetivos o regalos pendientes":
+            play music "audio/bgm_campus.wav" fadein 1.0
             jump hub_instituto
 
         "🏁 Terminar partida y volver al Menú Principal":

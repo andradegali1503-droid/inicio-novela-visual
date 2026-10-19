@@ -57,15 +57,20 @@ define config.has_voice = True
 ## Para permitir al usuario probar el volumen de los canales de sonido o voz,
 ## descomenta la línea más abajo y ajústala a un sonido de ejemplo.
 
-# define config.sample_sound = "sample-sound.ogg"
-# define config.sample_voice = "sample-voice.ogg"
+define config.sample_sound = "audio/sfx_sparkle.wav"
+define config.sample_voice = "audio/sfx_blush.wav"
 
 
 ## Descomenta la línea siguiente para ajustar un archivo de audio que sonará en
 ## el menú principal. Este archivo seguirá sonando en el juego hasta que sea
 ## detenido o se reproduzca otro archivo.
 
-# define config.main_menu_music = "main-menu-theme.ogg"
+define config.main_menu_music = "audio/bgm_campus.wav"
+
+## Sonidos por defecto para botones
+init python:
+    style.button.activate_sound = "audio/sfx_click.wav"
+
 
 
 ## Transiciones ################################################################
@@ -124,7 +129,7 @@ define config.window_hide_transition = Dissolve(.2)
 ## infinito; cualquier otro número indica el número de caracteres por segundo
 ## que se mostrarán.
 
-default preferences.text_cps = 0
+default preferences.text_cps = 45
 
 
 ## El retraso por defecto del auto-avance. Números más grandes indican esperas

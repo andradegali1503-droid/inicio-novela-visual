@@ -11,79 +11,95 @@ screen stats_hud():
             xalign 0.5
             yalign 0.0
             xfill True
-            ysize 82
+            ysize 84
             background "images/ui/hud_bar_tlr.png"
-            padding (16, 10)
+            padding (16, 8)
 
-            hbox:
+            fixed:
                 xfill True
-                yalign 0.5
+                yfill True
 
-                # Emblema To Love-Ru + Estadísticas en cápsulas brillantes (0% a 100%)
+                # 1. IZQUIERDA: Emblema To Love-Ru + Estadísticas en cápsulas brillantes (0% a 100%)
                 hbox:
-                    spacing 8
+                    xalign 0.0
                     yalign 0.5
+                    spacing 6
 
-                    add "images/ui/icon_tlr_heart.png" zoom 0.78 yalign 0.5
-
-                    frame:
-                        background Frame("images/ui/pill_stat_tlr.png", 24, 12, 24, 12)
-                        padding (13, 6)
-                        yalign 0.5
-                        hbox:
-                            spacing 5
-                            text "★ Reputación:" size 16 bold True color "#ffccf2" outlines [(2, "#24031a", 0, 0)] yalign 0.5
-                            text "[reputacion]%%" size 18 bold True color "#5dfdcb" outlines [(2, "#190212", 0, 0)] yalign 0.5
+                    add "images/ui/icon_tlr_heart.png" zoom 0.76 yalign 0.5
 
                     frame:
                         background Frame("images/ui/pill_stat_tlr.png", 24, 12, 24, 12)
-                        padding (13, 6)
+                        padding (10, 5)
                         yalign 0.5
                         hbox:
-                            spacing 5
-                            text "⚡ Ingenio:" size 16 bold True color "#90e0ef" outlines [(2, "#24031a", 0, 0)] yalign 0.5
-                            text "[ingenio]%%" size 18 bold True color "#ffffff" outlines [(2, "#190212", 0, 0)] yalign 0.5
+                            spacing 4
+                            text "★ Rep:" size 15 bold True color "#ffccf2" outlines [(2, "#24031a", 0, 0)] yalign 0.5
+                            text "[reputacion]%%" size 16 bold True color "#5dfdcb" outlines [(2, "#190212", 0, 0)] yalign 0.5
 
                     frame:
                         background Frame("images/ui/pill_stat_tlr.png", 24, 12, 24, 12)
-                        padding (13, 6)
+                        padding (10, 5)
                         yalign 0.5
                         hbox:
-                            spacing 5
-                            text "✨ Carisma:" size 16 bold True color "#ffe680" outlines [(2, "#24031a", 0, 0)] yalign 0.5
-                            text "[carisma]%%" size 18 bold True color "#ffffff" outlines [(2, "#190212", 0, 0)] yalign 0.5
+                            spacing 4
+                            text "⚡ Ing:" size 15 bold True color "#90e0ef" outlines [(2, "#24031a", 0, 0)] yalign 0.5
+                            text "[ingenio]%%" size 16 bold True color "#ffffff" outlines [(2, "#190212", 0, 0)] yalign 0.5
 
                     frame:
                         background Frame("images/ui/pill_stat_tlr.png", 24, 12, 24, 12)
-                        padding (13, 6)
+                        padding (10, 5)
                         yalign 0.5
                         hbox:
-                            spacing 5
-                            text "🏮 Festival:" size 16 bold True color "#ffb703" outlines [(2, "#24031a", 0, 0)] yalign 0.5
-                            text "[presupuesto_festival]%%" size 18 bold True color "#fff0f6" outlines [(2, "#190212", 0, 0)] yalign 0.5
+                            spacing 4
+                            text "✨ Car:" size 15 bold True color "#ffe680" outlines [(2, "#24031a", 0, 0)] yalign 0.5
+                            text "[carisma]%%" size 16 bold True color "#ffffff" outlines [(2, "#190212", 0, 0)] yalign 0.5
 
-                # Botones de acceso a Modales estilo To Love-Ru + Progreso Total 0-100%
+                    frame:
+                        background Frame("images/ui/pill_stat_tlr.png", 24, 12, 24, 12)
+                        padding (10, 5)
+                        yalign 0.5
+                        hbox:
+                            spacing 4
+                            text "🏮 Fest:" size 15 bold True color "#ffb703" outlines [(2, "#24031a", 0, 0)] yalign 0.5
+                            text "[presupuesto_festival]%%" size 16 bold True color "#fff0f6" outlines [(2, "#190212", 0, 0)] yalign 0.5
+
+                # 2. CENTRO: BARRA DE PROGRESO GENERAL DEL JUEGO (Centrada matemáticamente en xalign 0.5)
+                button:
+                    action Show("game_progress_modal")
+                    xalign 0.50
+                    yalign 0.5
+                    background Frame("images/ui/btn_gold_idle.png", 24, 14, 24, 14)
+                    hover_background Frame("images/ui/btn_gold_hover.png", 24, 14, 24, 14)
+                    padding (14, 5)
+                    hbox:
+                        spacing 9
+                        yalign 0.5
+                        text "🏆 PROGRESO:" size 15 bold True color "#2b0318" yalign 0.5
+                        fixed:
+                            xsize 190
+                            ysize 22
+                            yalign 0.5
+                            bar:
+                                value StaticValue(porc_partida, 100)
+                                xsize 190
+                                ysize 22
+                                yalign 0.5
+                                left_bar Frame("images/ui/bar_full_pink.png", 14, 14)
+                                right_bar Frame("images/ui/bar_empty_tlr.png", 14, 14)
+                            text "[porc_partida]%%" size 14 bold True color "#ffffff" outlines [(2, "#2b0318", 0, 0)] xalign 0.5 yalign 0.5
+
+                # 3. DERECHA: Botones de acceso a Modales estilo To Love-Ru
                 hbox:
                     xalign 1.0
-                    spacing 8
                     yalign 0.5
-
-                    textbutton "🏆 Progreso: [porc_partida]%%":
-                        action Show("game_progress_modal")
-                        background Frame("images/ui/btn_gold_idle.png", 24, 14, 24, 14)
-                        hover_background Frame("images/ui/btn_gold_hover.png", 24, 14, 24, 14)
-                        padding (18, 8)
-                        text_size 17
-                        text_bold True
-                        text_color "#2b0318"
-                        text_hover_color "#000000"
+                    spacing 6
 
                     textbutton "💖 Chicas ([afinidad_akane]%%/[afinidad_yuki]%%/[afinidad_hana]%%)":
                         action Show("girls_status_modal")
                         background Frame("images/ui/btn_pink_idle.png", 24, 14, 24, 14)
                         hover_background Frame("images/ui/btn_pink_hover.png", 24, 14, 24, 14)
-                        padding (18, 8)
-                        text_size 17
+                        padding (13, 7)
+                        text_size 15
                         text_bold True
                         text_color "#fff0f6"
                         text_hover_color "#ffffff"
@@ -93,8 +109,8 @@ screen stats_hud():
                         action Show("sub_girls_modal")
                         background Frame("images/ui/btn_purple_idle.png", 24, 14, 24, 14)
                         hover_background Frame("images/ui/btn_purple_hover.png", 24, 14, 24, 14)
-                        padding (18, 8)
-                        text_size 17
+                        padding (13, 7)
+                        text_size 15
                         text_bold True
                         text_color "#f3d5ff"
                         text_hover_color "#ffffff"
@@ -104,12 +120,22 @@ screen stats_hud():
                         action Show("consequences_log_modal")
                         background Frame("images/ui/btn_cyan_idle.png", 24, 14, 24, 14)
                         hover_background Frame("images/ui/btn_cyan_hover.png", 24, 14, 24, 14)
-                        padding (16, 8)
-                        text_size 17
+                        padding (13, 7)
+                        text_size 15
                         text_bold True
                         text_color "#e8fbff"
                         text_hover_color "#ffffff"
                         text_outlines [(2, "#062b45", 0, 0)]
+
+                    textbutton "🎬 Finales ([len(finales_vistos)]/7)":
+                        action Show("endings_gallery_modal")
+                        background Frame("images/ui/btn_gold_idle.png", 24, 14, 24, 14)
+                        hover_background Frame("images/ui/btn_gold_hover.png", 24, 14, 24, 14)
+                        padding (13, 7)
+                        text_size 15
+                        text_bold True
+                        text_color "#2b0318"
+                        text_hover_color "#000000"
 
 
 ## 2. Notificaciones Flotantes Apiladas de Puntos / Afinidad / Objetos
@@ -243,12 +269,16 @@ screen girls_status_modal():
                                     xfill True
                                     text "💖 Amor Romántico:" size 18 bold True color "#ffb3d9"
                                     text "[afinidad_akane] / 100 ♥" size 19 bold True color "#ffd13b" outlines [(2, "#280316", 0, 0)] xalign 1.0
-                                bar:
-                                    value StaticValue(afinidad_akane, 100)
+                                fixed:
                                     xfill True
-                                    ysize 20
-                                    left_bar Frame("images/ui/bar_full_pink.png", 10, 4)
-                                    right_bar Frame("images/ui/bar_empty_tlr.png", 10, 4)
+                                    ysize 26
+                                    bar:
+                                        value StaticValue(afinidad_akane, 100)
+                                        xfill True
+                                        ysize 26
+                                        left_bar Frame("images/ui/bar_full_pink.png", 14, 14)
+                                        right_bar Frame("images/ui/bar_empty_tlr.png", 14, 14)
+                                    text "[afinidad_akane]%% ♥" size 14 bold True color "#ffffff" outlines [(2, "#280316", 0, 0)] xalign 0.5 yalign 0.5
 
                                 hbox:
                                     spacing 8
@@ -290,12 +320,16 @@ screen girls_status_modal():
                                     xfill True
                                     text "💙 Amor Romántico:" size 18 bold True color "#90e0ef"
                                     text "[afinidad_yuki] / 100 ♥" size 19 bold True color "#ffd13b" outlines [(2, "#071c36", 0, 0)] xalign 1.0
-                                bar:
-                                    value StaticValue(afinidad_yuki, 100)
+                                fixed:
                                     xfill True
-                                    ysize 20
-                                    left_bar Frame("images/ui/bar_full_cyan.png", 10, 4)
-                                    right_bar Frame("images/ui/bar_empty_tlr.png", 10, 4)
+                                    ysize 26
+                                    bar:
+                                        value StaticValue(afinidad_yuki, 100)
+                                        xfill True
+                                        ysize 26
+                                        left_bar Frame("images/ui/bar_full_cyan.png", 14, 14)
+                                        right_bar Frame("images/ui/bar_empty_tlr.png", 14, 14)
+                                    text "[afinidad_yuki]%% ♥" size 14 bold True color "#ffffff" outlines [(2, "#071c36", 0, 0)] xalign 0.5 yalign 0.5
 
                                 hbox:
                                     spacing 8
@@ -337,12 +371,16 @@ screen girls_status_modal():
                                     xfill True
                                     text "🌸 Amor Romántico:" size 18 bold True color "#ffc2e2"
                                     text "[afinidad_hana] / 100 ♥" size 19 bold True color "#ffd13b" outlines [(2, "#2b0518", 0, 0)] xalign 1.0
-                                bar:
-                                    value StaticValue(afinidad_hana, 100)
+                                fixed:
                                     xfill True
-                                    ysize 20
-                                    left_bar Frame("images/ui/bar_full_pink.png", 10, 4)
-                                    right_bar Frame("images/ui/bar_empty_tlr.png", 10, 4)
+                                    ysize 26
+                                    bar:
+                                        value StaticValue(afinidad_hana, 100)
+                                        xfill True
+                                        ysize 26
+                                        left_bar Frame("images/ui/bar_full_pink.png", 14, 14)
+                                        right_bar Frame("images/ui/bar_empty_tlr.png", 14, 14)
+                                    text "[afinidad_hana]%% ♥" size 14 bold True color "#ffffff" outlines [(2, "#2b0518", 0, 0)] xalign 0.5 yalign 0.5
 
                                 hbox:
                                     spacing 8
@@ -440,12 +478,16 @@ screen sub_girls_modal():
                                     xfill True
                                     text "🔥 Nivel de Lujuria:" size 18 bold True color "#e0aaff"
                                     text "[tentacion_kuroe] / 100 🔥" size 19 bold True color "#ffb703" outlines [(2, "#240338", 0, 0)] xalign 1.0
-                                bar:
-                                    value StaticValue(tentacion_kuroe, 100)
+                                fixed:
                                     xfill True
-                                    ysize 20
-                                    left_bar Frame("images/ui/bar_full_ecchi.png", 10, 4)
-                                    right_bar Frame("images/ui/bar_empty_tlr.png", 10, 4)
+                                    ysize 26
+                                    bar:
+                                        value StaticValue(tentacion_kuroe, 100)
+                                        xfill True
+                                        ysize 26
+                                        left_bar Frame("images/ui/bar_full_ecchi.png", 14, 14)
+                                        right_bar Frame("images/ui/bar_empty_tlr.png", 14, 14)
+                                    text "[tentacion_kuroe]%% 🔥" size 14 bold True color "#ffffff" outlines [(2, "#240338", 0, 0)] xalign 0.5 yalign 0.5
 
                                 hbox:
                                     spacing 8
@@ -481,12 +523,16 @@ screen sub_girls_modal():
                                     xfill True
                                     text "🔥 Nivel de Lujuria:" size 18 bold True color "#e0aaff"
                                     text "[tentacion_mirei] / 100 🔥" size 19 bold True color "#ffb703" outlines [(2, "#240338", 0, 0)] xalign 1.0
-                                bar:
-                                    value StaticValue(tentacion_mirei, 100)
+                                fixed:
                                     xfill True
-                                    ysize 20
-                                    left_bar Frame("images/ui/bar_full_ecchi.png", 10, 4)
-                                    right_bar Frame("images/ui/bar_empty_tlr.png", 10, 4)
+                                    ysize 26
+                                    bar:
+                                        value StaticValue(tentacion_mirei, 100)
+                                        xfill True
+                                        ysize 26
+                                        left_bar Frame("images/ui/bar_full_ecchi.png", 14, 14)
+                                        right_bar Frame("images/ui/bar_empty_tlr.png", 14, 14)
+                                    text "[tentacion_mirei]%% 🔥" size 14 bold True color "#ffffff" outlines [(2, "#240338", 0, 0)] xalign 0.5 yalign 0.5
 
                                 hbox:
                                     spacing 8
@@ -522,12 +568,16 @@ screen sub_girls_modal():
                                     xfill True
                                     text "🔥 Nivel de Lujuria:" size 18 bold True color "#ffe680"
                                     text "[tentacion_reina] / 100 🔥" size 19 bold True color "#ffb703" outlines [(2, "#240338", 0, 0)] xalign 1.0
-                                bar:
-                                    value StaticValue(tentacion_reina, 100)
+                                fixed:
                                     xfill True
-                                    ysize 20
-                                    left_bar Frame("images/ui/bar_full_ecchi.png", 10, 4)
-                                    right_bar Frame("images/ui/bar_empty_tlr.png", 10, 4)
+                                    ysize 26
+                                    bar:
+                                        value StaticValue(tentacion_reina, 100)
+                                        xfill True
+                                        ysize 26
+                                        left_bar Frame("images/ui/bar_full_ecchi.png", 14, 14)
+                                        right_bar Frame("images/ui/bar_empty_tlr.png", 14, 14)
+                                    text "[tentacion_reina]%% 🔥" size 14 bold True color "#ffffff" outlines [(2, "#240338", 0, 0)] xalign 0.5 yalign 0.5
 
                                 hbox:
                                     spacing 8
@@ -683,33 +733,50 @@ screen game_progress_modal():
 
             # Barra general de progreso 0% a 100% + Resumen de Estadísticas y Finales
             frame:
-                xfill True
+                xalign 0.5
+                xsize 1420
                 background Frame("images/ui/panel_inner_tlr.png", 24, 18, 24, 18)
-                padding (24, 14)
+                padding (28, 16)
                 vbox:
-                    spacing 8
+                    spacing 10
+                    xalign 0.5
                     hbox:
-                        xfill True
-                        text "📊 Medidor de Juego Completo (Empieza en 0%% y sube hasta 100%%):" size 19 bold True color "#fff0f6"
-                        text "[porc_total]%% Completado  |  [falta_porc]%% Restante" size 19 bold True color "#ffd13b" xalign 1.0
-                    bar:
-                        value StaticValue(porc_total, 100)
-                        xfill True
-                        ysize 22
-                        left_bar Frame("images/ui/bar_full_pink.png", 10, 4)
-                        right_bar Frame("images/ui/bar_empty_tlr.png", 10, 4)
+                        xsize 1360
+                        xalign 0.5
+                        text "📊 Medidor de Juego Completo (0%% a 100%%):" size 20 bold True color "#fff0f6" outlines [(2, "#24031a", 0, 0)]
+                        text "[porc_total]%% COMPLETADO  |  [falta_porc]%% RESTANTE" size 20 bold True color "#ffd13b" outlines [(2, "#24031a", 0, 0)] xalign 1.0
+
+                    fixed:
+                        xsize 1360
+                        ysize 36
+                        xalign 0.5
+                        bar:
+                            value StaticValue(porc_total, 100)
+                            xsize 1360
+                            ysize 36
+                            xalign 0.5
+                            left_bar Frame("images/ui/bar_full_pink.png", 14, 14)
+                            right_bar Frame("images/ui/bar_empty_tlr.png", 14, 14)
+                        text "[porc_total]%% DEL JUEGO COMPLETO" size 17 bold True color "#ffffff" outlines [(2, "#24031a", 0, 0)] xalign 0.5 yalign 0.5
 
                     hbox:
-                        spacing 18
+                        spacing 16
                         xalign 0.5
-                        text "💖 Akane: [afinidad_akane]%%" size 17 bold True color "#ff85c0"
-                        text "💙 Yuki: [afinidad_yuki]%%" size 17 bold True color "#70e4ff"
-                        text "🌸 Hana: [afinidad_hana]%%" size 17 bold True color "#ffb3d9"
-                        text "🔥 Kuroe: [tentacion_kuroe]%%" size 17 bold True color "#e0aaff"
-                        text "🔥 Mirei: [tentacion_mirei]%%" size 17 bold True color "#c77dff"
-                        text "🔥 Reina: [tentacion_reina]%%" size 17 bold True color "#ffb703"
-                        text "🏮 Festival: [presupuesto_festival]%%" size 17 bold True color "#5dfdcb"
-                        text "🎬 Finales Vistos: [len(finales_vistos)]/7" size 17 bold True color "#ffd13b"
+                        text "💖 Akane: [afinidad_akane]%%" size 16 bold True color "#ff85c0"
+                        text "💙 Yuki: [afinidad_yuki]%%" size 16 bold True color "#70e4ff"
+                        text "🌸 Hana: [afinidad_hana]%%" size 16 bold True color "#ffb3d9"
+                        text "🔥 Kuroe: [tentacion_kuroe]%%" size 16 bold True color "#e0aaff"
+                        text "🔥 Mirei: [tentacion_mirei]%%" size 16 bold True color "#c77dff"
+                        text "🔥 Reina: [tentacion_reina]%%" size 16 bold True color "#ffb703"
+                        text "🏮 Festival: [presupuesto_festival]%%" size 16 bold True color "#5dfdcb"
+                        textbutton "🎬 Ver Galería de Finales ([len(finales_vistos)]/7)":
+                            action [Hide("game_progress_modal"), Show("endings_gallery_modal")]
+                            background Frame("images/ui/btn_purple_idle.png", 18, 10, 18, 10)
+                            hover_background Frame("images/ui/btn_purple_hover.png", 18, 10, 18, 10)
+                            padding (12, 4)
+                            text_size 15
+                            text_bold True
+                            text_color "#ffd13b"
 
             # Lista desplazable con todos los hitos (Qué tienes completado y qué te falta hacer)
             viewport:
@@ -745,6 +812,155 @@ screen game_progress_modal():
                                         text "➔ Cómo lograrlo: [h['como_lograrlo']]" size 16 color "#fff0f6"
                                     else:
                                         text "➔ ¡Objetivo completado en tu partida!" size 16 italic True color "#a8e6cf"
+
+
+## 4C. SALA DE RECUERDOS Y GALERÍA DE FINALES DESBLOQUEADOS (ESTILO TO LOVE-RU)
+screen endings_gallery_modal():
+    modal True
+    zorder 210
+
+    $ catalogo = obtener_catalogo_finales()
+    $ total_desbloqueados = sum(1 for f in catalogo if f["desbloqueado"])
+
+    add "#160214eb"
+
+    frame:
+        xalign 0.5
+        yalign 0.5
+        xsize 1680
+        ysize 930
+        background Frame("images/ui/modal_romance_tlr.png", 44, 44, 44, 44)
+        padding (42, 30)
+
+        vbox:
+            spacing 14
+            xfill True
+
+            # Cabecera
+            hbox:
+                xfill True
+                hbox:
+                    spacing 12
+                    yalign 0.5
+                    add "images/ui/icon_tlr_heart.png" yalign 0.5
+                    vbox:
+                        text "🎬 SALA DE RECUERDOS Y GALERÍA DE FINALES" size 31 bold True color "#ffd13b" outlines [(3, "#24031a", 0, 0)]
+                        text "✦ Has desbloqueado [total_desbloqueados] de [len(catalogo)] Finales Únicos en el Instituto Sakura ✦" size 17 bold True color "#5dfdcb" outlines [(2, "#190212", 0, 0)]
+
+                # Jukebox y Sound Test integrado
+                hbox:
+                    spacing 6
+                    yalign 0.5
+                    text "🎵 BGM:" size 15 bold True color "#fff0f6" yalign 0.5
+                    textbutton "🌸 Campus":
+                        action Play("music", "audio/bgm_campus.wav")
+                        background Frame("images/ui/btn_cyan_idle.png", 16, 8, 16, 8)
+                        padding (9, 5)
+                        text_size 14
+                    textbutton "🏮 Festival":
+                        action Play("music", "audio/bgm_festival.wav")
+                        background Frame("images/ui/btn_pink_idle.png", 16, 8, 16, 8)
+                        padding (9, 5)
+                        text_size 14
+                    textbutton "⏹":
+                        action Stop("music")
+                        background Frame("images/ui/btn_dark_idle.png", 16, 8, 16, 8)
+                        padding (9, 5)
+                        text_size 14
+
+                    null width 6
+                    text "🔊 SFX:" size 15 bold True color "#ffe680" yalign 0.5
+                    textbutton "🔔":
+                        action Play("sound", "audio/sfx_bell.wav")
+                        background Frame("images/ui/btn_gold_idle.png", 16, 8, 16, 8)
+                        padding (8, 5)
+                        text_size 14
+                    textbutton "✨":
+                        action Play("sound", "audio/sfx_sparkle.wav")
+                        background Frame("images/ui/btn_pink_idle.png", 16, 8, 16, 8)
+                        padding (8, 5)
+                        text_size 14
+                    textbutton "👏":
+                        action Play("sound", "audio/sfx_applause.wav")
+                        background Frame("images/ui/btn_purple_idle.png", 16, 8, 16, 8)
+                        padding (8, 5)
+                        text_size 14
+                    textbutton "💓":
+                        action Play("sound", "audio/sfx_heartbeat.wav")
+                        background Frame("images/ui/btn_pink_idle.png", 16, 8, 16, 8)
+                        padding (8, 5)
+                        text_size 14
+
+                textbutton "✖ Cerrar":
+                    xalign 1.0
+                    yalign 0.5
+                    action Hide("endings_gallery_modal")
+                    background Frame("images/ui/btn_pink_idle.png", 24, 14, 24, 14)
+                    hover_background Frame("images/ui/btn_pink_hover.png", 24, 14, 24, 14)
+                    padding (24, 10)
+                    text_size 20
+                    text_bold True
+                    text_color "#ffffff"
+                    text_outlines [(2, "#4a0528", 0, 0)]
+
+            # Lista desplazable de finales
+            viewport:
+                scrollbars "vertical"
+                mousewheel True
+                draggable True
+                xfill True
+                ysize 740
+
+                vbox:
+                    spacing 12
+                    xfill True
+                    for f in catalogo:
+                        frame:
+                            xfill True
+                            background Frame("images/ui/panel_inner_tlr.png", 24, 18, 24, 18)
+                            padding (20, 16)
+                            hbox:
+                                spacing 20
+                                xfill True
+                                yalign 0.5
+
+                                # Miniatura
+                                frame:
+                                    xsize 130
+                                    ysize 130
+                                    background Frame("images/ui/pill_stat_tlr.png", 12, 12, 12, 12)
+                                    padding (4, 4)
+                                    yalign 0.5
+                                    if f["desbloqueado"]:
+                                        add f["thumb"] fit "contain" xalign 0.5 yalign 0.5
+                                    else:
+                                        add "images/ui/icon_tlr_heart.png" zoom 0.75 alpha 0.35 xalign 0.5 yalign 0.5
+
+                                # Información del Final
+                                vbox:
+                                    spacing 5
+                                    xfill True
+                                    hbox:
+                                        xfill True
+                                        hbox:
+                                            spacing 8
+                                            yalign 0.5
+                                            text "[f['titulo']]" size 21 bold True color f['color'] outlines [(2, "#190212", 0, 0)]
+                                            text "• [f['tipo']]" size 16 bold True color "#e0aaff" yalign 0.5
+
+                                        if f["desbloqueado"]:
+                                            text "✨ ¡DESBLOQUEADO!" size 17 bold True color "#5dfdcb" outlines [(2, "#190212", 0, 0)] xalign 1.0
+                                        else:
+                                            text "🔒 BLOQUEADO" size 17 bold True color "#ff85c0" outlines [(2, "#24031a", 0, 0)] xalign 1.0
+
+                                    text "[f['subtitulo']]" size 17 italic True color "#ffd166"
+
+                                    if f["desbloqueado"]:
+                                        text "[f['descripcion']]" size 16 color "#ffffff"
+                                        text "🔑 Requisito cumplido: [f['requisito']]" size 15 color "#a8e6cf"
+                                    else:
+                                        text "Este final aún no ha sido alcanzado en tu partida. Sigue los pasos para desbloquearlo." size 16 italic True color "#d8d8e8"
+                                        text "🔑 Cómo desbloquearlo: [f['requisito']]" size 15 color "#ffb3d9"
 
 
 ## 5. MAPA INTERACTIVO DEL INSTITUTO SAKURA (ESTILO TO LOVE-RU)
@@ -800,15 +1016,28 @@ screen school_hub_selector():
                     xalign 1.0
                     spacing 10
                     yalign 0.5
-                    textbutton "🏆 Qué me falta ([porc_mapa]%%)":
+                    button:
                         action Show("game_progress_modal")
-                        background Frame("images/ui/btn_cyan_idle.png", 24, 14, 24, 14)
-                        hover_background Frame("images/ui/btn_cyan_hover.png", 24, 14, 24, 14)
-                        padding (18, 10)
-                        text_size 17
-                        text_bold True
-                        text_color "#ffffff"
-                        text_outlines [(2, "#062b45", 0, 0)]
+                        background Frame("images/ui/btn_gold_idle.png", 24, 14, 24, 14)
+                        hover_background Frame("images/ui/btn_gold_hover.png", 24, 14, 24, 14)
+                        padding (16, 7)
+                        yalign 0.5
+                        hbox:
+                            spacing 8
+                            yalign 0.5
+                            text "🏆 Progreso:" size 16 bold True color "#2b0318" yalign 0.5
+                            fixed:
+                                xsize 160
+                                ysize 20
+                                yalign 0.5
+                                bar:
+                                    value StaticValue(porc_mapa, 100)
+                                    xsize 160
+                                    ysize 20
+                                    yalign 0.5
+                                    left_bar Frame("images/ui/bar_full_pink.png", 14, 14)
+                                    right_bar Frame("images/ui/bar_empty_tlr.png", 14, 14)
+                                text "[porc_mapa]%%" size 13 bold True color "#ffffff" outlines [(2, "#2b0318", 0, 0)] xalign 0.5 yalign 0.5
 
                     if misiones_listas:
                         textbutton "🏮 ¡IR AL FESTIVAL NOCTURNO (CLÍMAX)!":
@@ -1308,6 +1537,8 @@ screen decision_bajo_presion(titulo_alerta, tiempo_limite, resultado_timeout, li
 
     default tiempo_restante = int(tiempo_limite)
 
+    on "show" action Play("sound", "audio/sfx_alert.wav")
+
     timer 1.0 repeat True action If(tiempo_restante > 1, SetScreenVariable("tiempo_restante", tiempo_restante - 1), Return(resultado_timeout))
 
     frame:
@@ -1328,12 +1559,18 @@ screen decision_bajo_presion(titulo_alerta, tiempo_limite, resultado_timeout, li
 
             text "⏳ ¡Decide antes de meterte en un lío mayor! ([tiempo_restante] segundos)" size 21 bold True color "#ffd13b" outlines [(2, "#24031a", 0, 0)] xalign 0.5
 
-            bar:
-                value AnimatedValue(tiempo_restante, int(tiempo_limite), 0.5)
-                xfill True
-                ysize 22
-                left_bar Frame("images/ui/bar_full_pink.png", 10, 4)
-                right_bar Frame("images/ui/bar_empty_tlr.png", 10, 4)
+            fixed:
+                xsize 1060
+                ysize 26
+                xalign 0.5
+                bar:
+                    value AnimatedValue(tiempo_restante, int(tiempo_limite), 0.5)
+                    xsize 1060
+                    ysize 26
+                    xalign 0.5
+                    left_bar Frame("images/ui/bar_full_pink.png", 14, 14)
+                    right_bar Frame("images/ui/bar_empty_tlr.png", 14, 14)
+                text "[tiempo_restante]s" size 15 bold True color "#ffffff" outlines [(2, "#24031a", 0, 0)] xalign 0.5 yalign 0.5
 
             null height 6
 
@@ -1352,3 +1589,26 @@ screen decision_bajo_presion(titulo_alerta, tiempo_limite, resultado_timeout, li
                         text_color "#fff0f6"
                         text_hover_color "#ffffff"
                         text_outlines [(2, "#24031a", 0, 0)]
+
+
+## 7. BANNER DE TRANSICIÓN CINEMÁTICA DE UBICACIÓN (ANIME LOCATION SPLASH)
+screen location_splash(nombre_lugar, subtitulo, icono="🏫"):
+    zorder 180
+    frame:
+        at location_banner_anim
+        xpos 50
+        ypos 95
+        background Frame("gui/frame.png", 24, 24, 24, 24)
+        padding (26, 16)
+        hbox:
+            spacing 16
+            yalign 0.5
+            text "[icono]" size 36 yalign 0.5
+            vbox:
+                spacing 2
+                text "✦ INSTITUTO PRIVADO SAKURA ✦" size 13 bold True color "#ffd13b" outlines [(2, "#24031a", 0, 0)]
+                text "[nombre_lugar]" size 23 bold True color "#ffffff" outlines [(2, "#24031a", 0, 0)]
+                text "[subtitulo]" size 15 italic True color "#5dfdcb" outlines [(2, "#190212", 0, 0)]
+
+    timer 2.8 action Hide("location_splash")
+

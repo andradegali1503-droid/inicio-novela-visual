@@ -63,9 +63,11 @@ default entrenado_cafeteria = False
 default entrenado_patio = False
 default climax_completado = False
 default finales_vistos = set()
+default persistent.finales_desbloqueados = set()
 
 ## Banderas de Consecuencias (Ramas Narrativas)
 default consecuencia_culpa_asumida = False
+default consecuencia_jugando_con_fuego = False
 default consecuencia_akane_confia = False
 default consecuencia_yuki_invento_estable = False
 default consecuencia_hana_secreto_guardado = False
@@ -522,6 +524,107 @@ init python:
     def calcular_progreso_total():
         return obtener_desglose_progreso_juego()["porcentaje"]
 
+    def es_final_desbloqueado(id_final):
+        if id_final in store.finales_vistos:
+            return True
+        if hasattr(persistent, "finales_desbloqueados") and persistent.finales_desbloqueados and id_final in persistent.finales_desbloqueados:
+            return True
+        return False
+
+    def registrar_final(id_final):
+        store.finales_vistos.add(id_final)
+        if not hasattr(persistent, "finales_desbloqueados") or persistent.finales_desbloqueados is None:
+            persistent.finales_desbloqueados = set()
+        persistent.finales_desbloqueados.add(id_final)
+
+    def obtener_catalogo_finales():
+        return [
+            {
+                "id": "akane",
+                "titulo": "Ruta Verdadera de Akane Tachibana",
+                "subtitulo": "«El Corazón Secreto de la Presidenta Tsundere»",
+                "tipo": "Heroína Principal ❤️",
+                "color": "#ff4d6d",
+                "thumb": "images/thumb_akane.png",
+                "desbloqueado": es_final_desbloqueado("akane"),
+                "visto": es_final_desbloqueado("akane"),
+                "requisito": "50%+ ♥ Akane + Cierre con Kuroe + Festival Salvado.",
+                "descripcion": "Akane confiesa su amor en el balcón del Consejo tras superar la inspección del Subdirector y salvar el Festival Cultural juntos."
+            },
+            {
+                "id": "yuki",
+                "titulo": "Ruta Verdadera de Yuki Shirogane",
+                "subtitulo": "«La Ecuación Perfecta del Primer Amor»",
+                "tipo": "Heroína Principal 💙",
+                "color": "#4cc9f0",
+                "thumb": "images/thumb_yuki.png",
+                "desbloqueado": es_final_desbloqueado("yuki"),
+                "visto": es_final_desbloqueado("yuki"),
+                "requisito": "50%+ ♥ Yuki + Cierre con Mirei + Festival Salvado.",
+                "descripcion": "Yuki experimenta la calidez del amor bajo la proyección de galaxias del proyector holográfico estabilizado en el laboratorio."
+            },
+            {
+                "id": "hana",
+                "titulo": "Ruta Verdadera de Hana Sakuragi",
+                "subtitulo": "«Promesa Bajo la Lluvia de Sakura»",
+                "tipo": "Heroína Principal 🌸",
+                "color": "#ff85a1",
+                "thumb": "images/thumb_hana.png",
+                "desbloqueado": es_final_desbloqueado("hana"),
+                "visto": es_final_desbloqueado("hana"),
+                "requisito": "50%+ ♥ Hana + Cierre con Reina + Festival Salvado.",
+                "descripcion": "Hana triunfa en su exhibición deportiva en pareja contigo frente al ojeador y se confiesan bajo el gran cerezo florecido."
+            },
+            {
+                "id": "harem",
+                "titulo": "Final Secreto Legendario",
+                "subtitulo": "«El Héroe Indiscutible del Instituto Sakura (Harem)»",
+                "tipo": "Final Secreto 👑",
+                "color": "#ffd166",
+                "thumb": "images/ui/icon_tlr_heart.png",
+                "desbloqueado": es_final_desbloqueado("harem"),
+                "visto": es_final_desbloqueado("harem"),
+                "requisito": "50%+ ♥ con Akane, Yuki y Hana + 75%+ Festival + Sin ataduras.",
+                "descripcion": "¡Las tres heroínas principales se reúnen contigo bajo los fuegos artificiales y acuerdan compartir tu amor sin ceder un solo centímetro!"
+            },
+            {
+                "id": "kuroe",
+                "titulo": "Sub-Ruta Prohibida de Kuroe Sakamoto",
+                "subtitulo": "«Prisionero de la Chica Mala»",
+                "tipo": "Modo Darkness 🔥",
+                "color": "#e0aaff",
+                "thumb": "images/thumb_kuroe.png",
+                "desbloqueado": es_final_desbloqueado("kuroe"),
+                "visto": es_final_desbloqueado("kuroe"),
+                "requisito": "Enredado con Kuroe al comenzar el Festival.",
+                "descripcion": "Sucumbes a la pasión rebelde de Kuroe y abandonas la ceremonia oficial para pasar la noche encerrado con ella entre las estanterías de la biblioteca."
+            },
+            {
+                "id": "mirei",
+                "titulo": "Sub-Ruta Prohibida de Mirei Kanzaki",
+                "subtitulo": "«Experimento Nocturno de Lujuria»",
+                "tipo": "Modo Darkness 🔥",
+                "color": "#c77dff",
+                "thumb": "images/thumb_mirei.png",
+                "desbloqueado": es_final_desbloqueado("mirei"),
+                "visto": es_final_desbloqueado("mirei"),
+                "requisito": "Enredado con Mirei al comenzar el Festival.",
+                "descripcion": "Te entregas al experimento corporal de la voluptuosa sempai Mirei en el almacén químico mientras el resto del instituto observa los fuegos."
+            },
+            {
+                "id": "reina",
+                "titulo": "Sub-Ruta Prohibida de Reina Kurokawa",
+                "subtitulo": "«Entrenamiento Privado sin Límites»",
+                "tipo": "Modo Darkness 🔥",
+                "color": "#ff9e00",
+                "thumb": "images/thumb_reina.png",
+                "desbloqueado": es_final_desbloqueado("reina"),
+                "visto": es_final_desbloqueado("reina"),
+                "requisito": "Enredado con Reina al comenzar el Festival.",
+                "descripcion": "Reina te arrastra a los vestuarios de educación física tras las duchas para una ardiente sesión de resistencia corporal hasta el amanecer."
+            }
+        ]
+
     def registrar_intento_bloqueo(clave):
         store.intentos_bloqueo_zona[clave] = store.intentos_bloqueo_zona.get(clave, 0) + 1
         store.zona_modal_bloqueada = clave
@@ -566,6 +669,15 @@ init python:
             pendientes.append("Reina")
         return pendientes
 
+    def obtener_texto_sub_pendientes():
+        pendientes = obtener_estado_sub_Pendiente()
+        return ", ".join(pendientes)
+
+    def registrar_charla(personaje):
+        if personaje in store.charlas_intimidad:
+            store.charlas_intimidad[personaje] = store.charlas_intimidad.get(personaje, 0) + 1
+        return store.charlas_intimidad.get(personaje, 1)
+
     def limpiar_popups():
         store.cola_popups = []
         renpy.hide_screen("point_popup")
@@ -574,6 +686,10 @@ init python:
         store.cola_popups.append((texto, color))
         if len(store.cola_popups) > 4:
             store.cola_popups = store.cola_popups[-4:]
+        try:
+            renpy.play("audio/sfx_chime.wav", channel="sound")
+        except Exception:
+            pass
         renpy.hide_screen("point_popup")
         renpy.show_screen("point_popup")
         renpy.restart_interaction()
@@ -681,7 +797,7 @@ init python:
         renpy.hide_screen("reaction_overlay")
 
     def mostrar_reaccion(emote, posicion="center", ambiente=None):
-        """Muestra un icono de reacción anime flotante (hearts, anger, shock, sweat, sparkle, lust, question, music) y un brillo ambiental opcional."""
+        """Muestra un icono de reacción anime flotante (hearts, anger, shock, sweat, sparkle, lust, question, music), brillo ambiental y SFX."""
         mapa_iconos = {
             "hearts": "images/ui/emote_hearts.png",
             "anger": "images/ui/emote_anger.png",
@@ -692,10 +808,36 @@ init python:
             "question": "images/ui/emote_question.png",
             "music": "images/ui/emote_music.png"
         }
+        mapa_sonidos = {
+            "hearts": "audio/sfx_heartbeat.wav",
+            "lust": "audio/sfx_heartbeat.wav",
+            "anger": "audio/sfx_alert.wav",
+            "shock": "audio/sfx_alert.wav",
+            "sparkle": "audio/sfx_sparkle.wav",
+            "music": "audio/sfx_chime.wav",
+            "sweat": "audio/sfx_blush.wav",
+            "question": "audio/sfx_blush.wav"
+        }
         store.reaccion_actual_icono = mapa_iconos.get(emote, "images/ui/emote_hearts.png")
         store.reaccion_actual_pos = posicion
         store.reaccion_actual_ambiente = ambiente
+        sfx = mapa_sonidos.get(emote)
+        if sfx:
+            try:
+                renpy.play(sfx, channel="sound")
+            except Exception:
+                pass
         renpy.hide_screen("reaction_overlay")
         renpy.show_screen("reaction_overlay")
         renpy.restart_interaction()
+
+    def anunciar_lugar(nombre_lugar, subtitulo, icono="🏫"):
+        """Muestra un elegante banner animado de localización con sonido de transición cinemática."""
+        renpy.hide_screen("location_splash")
+        renpy.show_screen("location_splash", nombre_lugar=nombre_lugar, subtitulo=subtitulo, icono=icono)
+        try:
+            renpy.play("audio/sfx_swoosh.wav", channel="sound")
+        except Exception:
+            pass
+
 
