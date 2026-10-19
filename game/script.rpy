@@ -10,6 +10,11 @@ image bg rooftop = "images/bg_rooftop.png"
 image bg festival = "images/bg_festival.png"
 image bg library = "images/bg_library.png"
 image bg courtyard = "images/bg_courtyard.png"
+image bg hallway_1f = "images/bg_hallway_1f.png"
+image bg stairs = "images/bg_stairs.png"
+image bg hallway_2f = "images/bg_hallway_2f.png"
+image bg lockers_gym = "images/bg_lockers_gym.png"
+image bg chem_lab = "images/bg_chem_lab.png"
 
 ## 2. Definición de Sprites de las 3 HEROÍNAS PRINCIPALES (6 Expresiones c/u = 18 Sprites)
 # Akane Tachibana (Tsundere - Presidenta del Consejo Estudiantil)
@@ -279,16 +284,56 @@ label start:
 ################################################################################
 
 label hub_instituto:
-    scene bg courtyard with trans_map_slide_left
+    $ renpy.block_rollback()
+
+label punto_escuela_loop:
+    $ nodo_info = PUNTOS_NAVEGACION_ESCUELA.get(ubicacion_nodo, PUNTOS_NAVEGACION_ESCUELA["patio"])
+    $ bg_nodo = nodo_info.get("bg_tag", "bg courtyard")
+
+    if transicion_caminata_pendiente == "trans_walk_forward":
+        scene expression bg_nodo with trans_walk_forward
+    elif transicion_caminata_pendiente == "trans_walk_back":
+        scene expression bg_nodo with trans_walk_back
+    elif transicion_caminata_pendiente == "trans_stairs_up":
+        scene expression bg_nodo with trans_stairs_up
+    elif transicion_caminata_pendiente == "trans_stairs_down":
+        scene expression bg_nodo with trans_stairs_down
+    elif transicion_caminata_pendiente == "trans_hall_left":
+        scene expression bg_nodo with trans_hall_left
+    elif transicion_caminata_pendiente == "trans_hall_right":
+        scene expression bg_nodo with trans_hall_right
+    elif transicion_caminata_pendiente == "trans_door_open":
+        scene expression bg_nodo with trans_door_open
+    elif transicion_caminata_pendiente == "trans_festival":
+        scene expression bg_nodo with trans_festival
+    else:
+        scene expression bg_nodo with dissolve
+    $ transicion_caminata_pendiente = None
+
     show sakura_petals
 
-    call screen school_hub_selector
-    $ destino_elegido = _return
+    call screen school_point_and_click
+    $ accion_elegida = _return
 
-    if destino_elegido == "ir_climax_festival":
+    if accion_elegida == "caminar":
+        jump punto_escuela_loop
+    elif accion_elegida == "abrir_mapa_global":
+        call screen school_hub_selector
+        $ dest_mapa = _return
+        if dest_mapa == "caminar":
+            jump punto_escuela_loop
+        elif dest_mapa == "ir_climax_festival":
+            jump confirmar_ir_festival
+        elif dest_mapa:
+            jump expression dest_mapa
+        else:
+            jump punto_escuela_loop
+    elif accion_elegida == "confirmar_ir_festival" or accion_elegida == "ir_climax_festival":
         jump confirmar_ir_festival
+    elif accion_elegida:
+        jump expression accion_elegida
 
-    jump expression destino_elegido
+    jump punto_escuela_loop
 
 
 label confirmar_ir_festival:
@@ -379,7 +424,14 @@ label zona_consejo:
             "💬 Conectar con Akane (Charla / Elogio / Momento Íntimo)" if visitado_akane:
                 jump charlar_con_akane
 
-            "🗺️ Abrir el Mapa del Instituto":
+            "🚪 Salir al Pasillo (2F)":
+                hide akane with dissolve
+                $ ubicacion_nodo = "pasillo_2f"
+                $ transicion_caminata_pendiente = "trans_door_open"
+                play sound "audio/sfx_door_slide.wav"
+                jump punto_escuela_loop
+
+            "🗺️ Abrir el Plano Global":
                 hide akane with dissolve
                 jump hub_instituto
 
@@ -515,7 +567,16 @@ label zona_laboratorio:
             "🔥 Coquetear o hablar en voz baja con la sempai Mirei junto al almacén" if encuentro_sub_mirei:
                 jump charlar_con_mirei
 
-            "🗺️ Abrir el Mapa del Instituto":
+            "🚪 Salir al Pasillo (2F)":
+                hide yuki
+                hide mirei
+                with dissolve
+                $ ubicacion_nodo = "pasillo_2f"
+                $ transicion_caminata_pendiente = "trans_door_open"
+                play sound "audio/sfx_door_slide.wav"
+                jump punto_escuela_loop
+
+            "🗺️ Abrir el Plano Global":
                 hide yuki
                 hide mirei
                 with dissolve
@@ -659,7 +720,14 @@ label zona_azotea:
             "💬 Conectar con Hana junto a la barandilla (Charla / Abrazo / Ensayo)" if visitado_hana:
                 jump charlar_con_hana
 
-            "🗺️ Abrir el Mapa del Instituto":
+            "🚪 Bajar al Rellano de Escaleras":
+                hide hana with dissolve
+                $ ubicacion_nodo = "escaleras"
+                $ transicion_caminata_pendiente = "trans_door_open"
+                play sound "audio/sfx_door_slide.wav"
+                jump punto_escuela_loop
+
+            "🗺️ Abrir el Plano Global":
                 hide hana with dissolve
                 jump hub_instituto
 
@@ -759,7 +827,14 @@ label zona_biblioteca:
                 narrador "¡Encuentras en la sección de astronomía el 'Libro de Astrofísica Poética' que tanto quería Yuki!"
                 jump menu_zona_biblioteca
 
-            "🗺️ Abrir el Mapa del Instituto":
+            "🚪 Salir al Pasillo Principal (1F)":
+                hide kuroe with dissolve
+                $ ubicacion_nodo = "pasillo_1f"
+                $ transicion_caminata_pendiente = "trans_door_open"
+                play sound "audio/sfx_door_slide.wav"
+                jump punto_escuela_loop
+
+            "🗺️ Abrir el Plano Global":
                 hide kuroe with dissolve
                 jump hub_instituto
 
@@ -874,7 +949,14 @@ label zona_cafeteria:
                 narrador "Animas a los voluntarios del festival con tu carisma."
                 jump menu_zona_cafeteria
 
-            "🗺️ Abrir el Mapa del Instituto":
+            "🚪 Salir al Pabellón Deportivo / Taquillas":
+                hide reina with dissolve
+                $ ubicacion_nodo = "cafeteria_pasillo"
+                $ transicion_caminata_pendiente = "trans_door_open"
+                play sound "audio/sfx_door_slide.wav"
+                jump punto_escuela_loop
+
+            "🗺️ Abrir el Plano Global":
                 hide reina with dissolve
                 jump hub_instituto
 
@@ -1005,7 +1087,7 @@ label terminar_con_kuroe:
 label sub_evento_mirei:
     $ encuentro_sub_mirei = True
     $ anunciar_lugar("ALMACÉN QUÍMICO RESTRINGIDO", "Laboratorio Privado • Sempai Mirei Kanzaki", "🧪")
-    scene bg classroom with trans_darkness_lab
+    scene bg chem_lab with trans_darkness_lab
     show mirei teasing at closeup_romance, sway_temptation
     $ mostrar_reaccion("lust", "center", "darkness")
 
@@ -1760,3 +1842,97 @@ label pantalla_resumen_final:
             $ mostrar_hud = False
             hide screen stats_hud
             return
+
+
+################################################################################
+## PUNTOS DE INSPECCIÓN Y EXPLORACIÓN INTERACTIVA (POINT-AND-CLICK)
+################################################################################
+
+label inspeccionar_patio_rumores:
+    $ renpy.block_rollback()
+    play sound "audio/sfx_paper.wav"
+    narrador "Te acercas al tablón de anuncios del patio exterior junto al banco de piedra bajo los cerezos en flor."
+    if "patio_rumores" not in objetos_inspeccionados:
+        $ objetos_inspeccionados.add("patio_rumores")
+        $ cambiar_stat("reputacion", 5, "¡Información del Festival!")
+        $ cambiar_stat("festival", 5, "Preparativos analizados")
+        narrador "El cartel anuncia: {i}«Festival Cultural Sakura: ¡Feria gastronómica, exhibición de clubes y clímax bajo los fuegos artificiales!»{/i}"
+        narrador "Escuchas a varios alumnos comentar que la Presidenta Akane ha estado buscando con desesperación unas actas oficiales, mientras que en la azotea Hana entrena incansable."
+        $ mostrar_reaccion("sparkle", "center")
+        leo "Parece que todos están volcados en que este festival sea legendario. ¡No puedo quedarme de brazos cruzados!"
+    else:
+        narrador "El tablón luce lleno de horarios y notas de alumnos deseando que el festival sea un éxito rotundo."
+    jump punto_escuela_loop
+
+label inspeccionar_taquillas_1f:
+    $ renpy.block_rollback()
+    play sound "audio/sfx_door_slide.wav"
+    narrador "Te detienes frente a las hileras de getabako y taquillas de zapatos del vestíbulo de la planta baja."
+    if "taquillas_1f" not in objetos_inspeccionados:
+        $ objetos_inspeccionados.add("taquillas_1f")
+        $ cambiar_stat("carisma", 5, "¡Detalle curioso descubierto!")
+        narrador "Al abrir tu taquilla, encuentras una pequeña nota perfumada doblada en forma de cerezo."
+        narrador "{i}«Aquel que busca el amor en el festival deberá demostrar valentía y no tropezar en los pasillos... ¿o acaso ese es tu encanto, Leo?»{/i}"
+        $ mostrar_reaccion("hearts", "center")
+        leo "¿Una nota anónima con mi nombre? ¡Vaya, el ambiente del festival tiene a todas las alumnas revolucionadas!"
+    else:
+        narrador "Tus zapatos de exterior descansan ordenados. El reflejo del sol de la tarde ilumina suavemente el pulido suelo de madera."
+    jump punto_escuela_loop
+
+label inspeccionar_ventanal_escaleras:
+    $ renpy.block_rollback()
+    play sound "audio/sfx_chime.wav"
+    narrador "Haces una pausa en el rellano entre el primer y segundo piso. El inmenso ventanal ofrece una vista espectacular del instituto."
+    if "ventanal_escaleras" not in objetos_inspeccionados:
+        $ objetos_inspeccionados.add("ventanal_escaleras")
+        $ cambiar_stat("ingenio", 5, "Momento de serenidad")
+        $ mostrar_reaccion("sparkle", "center")
+        narrador "Los cerezos mecen sus ramas cargadas de flores rosadas, y la brisa arrastra pétalos que danzan contra los cristales bañados por la luz dorada."
+        leo "Desde aquí se puede ver la entrada, el patio y las siluetas del campus. Conectar con las chicas me ha hecho ver este instituto con otros ojos."
+    else:
+        narrador "El sol poniente proyecta tonos ámbar y violeta a través del cristal. Un remanso de paz en mitad del ajetreo escolar."
+    jump punto_escuela_loop
+
+label inspeccionar_cartelera_2f:
+    $ renpy.block_rollback()
+    play sound "audio/sfx_paper.wav"
+    narrador "Inspeccionas la pulcra cartelera del Consejo Estudiantil situada entre la Sala del Consejo y el Laboratorio de Ciencias."
+    if "cartelera_2f" not in objetos_inspeccionados:
+        $ objetos_inspeccionados.add("cartelera_2f")
+        $ cambiar_stat("ingenio", 5, "Lectura de reglamentos")
+        narrador "Una circular firmada por Akane Tachibana con elegante caligrafía advierte sobre la disciplina escolar y el estricto control de permisos."
+        narrador "Al lado, un post-it azul con letra microscópica de Yuki recuerda: {i}«Protocolo de seguridad: Evitar condensación cerca de los condensadores holográficos.»{/i}"
+        $ mostrar_reaccion("question", "center")
+        leo "Akane y Yuki son polos opuestos, pero ambas se entregan al 100%% por lo que aman."
+    else:
+        narrador "Los sellos y avisos del Consejo están colocados con precisión milimétrica. Ni un solo alfiler torcido."
+    jump punto_escuela_loop
+
+label inspeccionar_vitrina_trofeos:
+    $ renpy.block_rollback()
+    play sound "audio/sfx_chime.wav"
+    narrador "Te acercas a la vitrina de cristal iluminada del pasillo de taquillas deportivas."
+    if "vitrina_trofeos" not in objetos_inspeccionados:
+        $ objetos_inspeccionados.add("vitrina_trofeos")
+        $ cambiar_stat("carisma", 5, "Espíritu deportivo")
+        narrador "Trofeos dorados de atletismo, copas relucientes y una fotografía del equipo donde aparecen Hana sonriendo radiante y Reina con expresión victoriosa."
+        $ mostrar_reaccion("hearts", "center")
+        leo "Hana y Reina han ganado prácticamente todos los campeonatos regionales. ¡Su energía atlética es realmente arrolladora!"
+    else:
+        narrador "Las medallas doradas y plateadas brillan bajo los focos de la galería deportiva."
+    jump punto_escuela_loop
+
+label inspeccionar_quimicos_mirei:
+    $ renpy.block_rollback()
+    play sound "audio/sfx_sparkle.wav"
+    narrador "Examinas los matraces humeantes y probetas de cristal que Mirei guarda celosamente en su almacén privado."
+    if "quimicos_mirei" not in objetos_inspeccionados:
+        $ objetos_inspeccionados.add("quimicos_mirei")
+        $ cambiar_stat("ingenio", 5, "Conocimiento químico prohibido")
+        $ mostrar_reaccion("lust", "center", "darkness")
+        narrador "Un cuaderno con notas manuscritas de Mirei detalla: {i}«Extracto de flor de cerezo lunar: incrementa el pulso cardíaco y la predisposición al romance.»{/i}"
+        leo "Trago saliva... Más me vale tener cuidado con lo que bebo en esta sala."
+    else:
+        narrador "Líquidos de colores violeta y carmesí burbujean suavemente en frascos etiquetados con fórmulas complejas."
+    jump punto_escuela_loop
+

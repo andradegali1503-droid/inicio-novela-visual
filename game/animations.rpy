@@ -294,9 +294,30 @@ define trans_iris_out = CropMove(0.40, "irisout")
 define trans_iris_in = CropMove(0.40, "irisin")
 define trans_cinematic_dissolve = Dissolve(0.42)
 
+# 10. Transiciones Point-and-Click de Caminata y Puertas por la Escuela
+define trans_walk_forward = PushMove(0.35, "pushup")
+define trans_walk_back = PushMove(0.35, "pushdown")
+define trans_stairs_up = CropMove(0.38, "slideup")
+define trans_stairs_down = CropMove(0.38, "slidedown")
+define trans_hall_left = PushMove(0.34, "pushright")
+define trans_hall_right = PushMove(0.34, "pushleft")
+define trans_door_open = Fade(0.12, 0.04, 0.22, color="#1c051a")
+
 ## ============================================================================
 ## TRANSFORMACIONES ATL DINÁMICAS PARA SITUACIONES ESPECÍFICAS
 ## ============================================================================
+
+# Pulso sutil para puntos de interés y flechas Point-and-Click
+transform hotspot_pulse:
+    zoom 1.0 yoffset 0
+    ease 1.2 zoom 1.05 yoffset -4
+    ease 1.2 zoom 1.0 yoffset 0
+    repeat
+
+# Aparición animada de elementos interactivos
+transform hotspot_pop:
+    alpha 0.0 zoom 0.85
+    easein_back 0.25 alpha 1.0 zoom 1.0
 
 # Tropiezo cómico de frente estilo anime ecchi (To Love-Ru fall)
 transform comic_trip:

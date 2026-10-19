@@ -1016,6 +1016,15 @@ screen school_hub_selector():
                     xalign 1.0
                     spacing 10
                     yalign 0.5
+                    textbutton "🚶‍♂️ Explorar en 1ª Persona (Point & Click)":
+                        action Return("caminar")
+                        background Frame("images/ui/btn_purple_idle.png", 24, 14, 24, 14)
+                        hover_background Frame("images/ui/btn_purple_hover.png", 24, 14, 24, 14)
+                        padding (14, 7)
+                        text_size 15
+                        text_bold True
+                        text_color "#ffffff"
+
                     button:
                         action Show("game_progress_modal")
                         background Frame("images/ui/btn_gold_idle.png", 24, 14, 24, 14)
@@ -1611,4 +1620,219 @@ screen location_splash(nombre_lugar, subtitulo, icono="🏫"):
                 text "[subtitulo]" size 15 italic True color "#5dfdcb" outlines [(2, "#190212", 0, 0)]
 
     timer 2.8 action Hide("location_splash")
+
+
+################################################################################
+## 8. SISTEMA DE EXPLORACIÓN POINT-AND-CLICK POR EL INSTITUTO SAKURA
+################################################################################
+
+screen school_point_and_click():
+    zorder 90
+
+    $ nodo = PUNTOS_NAVEGACION_ESCUELA.get(ubicacion_nodo, PUNTOS_NAVEGACION_ESCUELA["patio"])
+    $ etapa_num, etapa_max, obj_texto, obj_zona = obtener_objetivo_actual()
+    $ porc_p = calcular_progreso_total()
+    $ festival_listo = esta_zona_desbloqueada("festival")
+
+    # Atajos de Teclado
+    key "m" action Return("abrir_mapa_global")
+    key "M" action Return("abrir_mapa_global")
+
+    # 1. INSIGNIA DE UBICACIÓN Y PLANTA (Superior Izquierda, debajo del HUD)
+    frame:
+        xpos 40
+        ypos 94
+        background Frame("images/ui/nav_floor_badge.png", 20, 20, 20, 20)
+        padding (22, 10)
+        hbox:
+            spacing 12
+            yalign 0.5
+            text nodo["icono_planta"] size 28 yalign 0.5
+            vbox:
+                spacing 2
+                text "[nodo['planta']] • [nodo['nombre']]" size 20 bold True color "#ffd13b" outlines [(2, "#24031a", 0, 0)]
+                text "[nodo['subtitulo']]" size 14 italic True color "#ffffff" outlines [(1, "#24031a", 0, 0)]
+
+    # 2. BANNER DE OBJETIVO ACTUAL DE LA TRAMA (Superior Centro)
+    frame:
+        xalign 0.5
+        ypos 94
+        background Frame("images/ui/pill_stat_tlr.png", 24, 12, 24, 12)
+        padding (20, 8)
+        hbox:
+            spacing 10
+            yalign 0.5
+            text "🎯 OBJETIVO (Etapa [etapa_num]/[etapa_max]):" size 16 bold True color "#ffe680" outlines [(2, "#24031a", 0, 0)]
+            text "[obj_texto]" size 16 bold True color "#5dfdcb" outlines [(2, "#190212", 0, 0)]
+
+    # 3. BOTÓN DE ACCESO AL MAPA GLOBAL ISOMÉTRICO (Superior Derecha)
+    hbox:
+        xalign 0.98
+        ypos 94
+        spacing 10
+        textbutton "🗺️ Plano Global (M)":
+            action Return("abrir_mapa_global")
+            background Frame("images/ui/btn_gold_idle.png", 24, 14, 24, 14)
+            hover_background Frame("images/ui/btn_gold_hover.png", 24, 14, 24, 14)
+            padding (18, 9)
+            text_size 16
+            text_bold True
+            text_color "#2b0318"
+
+    # 4. PUNTOS DE INTERACCIÓN (PUERTAS, CAMINOS Y NAVEGACIÓN DIRECCIONAL)
+    for pt in nodo["puntos"]:
+        $ ppos = pt["pos"]
+        $ tipo_pt = pt["tipo"]
+
+        if tipo_pt == "walk":
+            button:
+                xpos ppos[0]
+                ypos ppos[1]
+                xanchor 0.5
+                yanchor 0.5
+                background Frame("images/ui/nav_door_idle.png", 24, 14, 24, 14)
+                hover_background Frame("images/ui/nav_door_hover.png", 24, 14, 24, 14)
+                padding (18, 10)
+                at hotspot_pulse
+                action [SetVariable("ubicacion_nodo", pt["destino_nodo"]), SetVariable("transicion_caminata_pendiente", pt["transicion"]), Play("sound", pt["sonido"]), Return("caminar")]
+                vbox:
+                    spacing 2
+                    xalign 0.5
+                    hbox:
+                        spacing 8
+                        xalign 0.5
+                        text pt["icono"] size 22 yalign 0.5
+                        text pt["titulo"] size 18 bold True color "#ffffff" outlines [(2, "#24031a", 0, 0)]
+                    text pt["sub"] size 13 color "#ffe6eb" outlines [(1, "#24031a", 0, 0)] xalign 0.5
+
+        elif tipo_pt == "zone":
+            $ z_key = pt["zona_key"]
+            $ z_abierta = esta_zona_desbloqueada(z_key)
+            $ z_intentos = intentos_bloqueo_zona.get(z_key, 0)
+
+            if z_abierta:
+                button:
+                    xpos ppos[0]
+                    ypos ppos[1]
+                    xanchor 0.5
+                    yanchor 0.5
+                    background Frame("images/ui/nav_door_idle.png", 24, 14, 24, 14)
+                    hover_background Frame("images/ui/nav_door_hover.png", 24, 14, 24, 14)
+                    padding (18, 10)
+                    at hotspot_pulse
+                    action [SetVariable("transicion_caminata_pendiente", pt["transicion"]), Play("sound", pt["sonido"]), Return(pt["destino_label"])]
+                    vbox:
+                        spacing 2
+                        xalign 0.5
+                        hbox:
+                            spacing 8
+                            xalign 0.5
+                            text pt["icono"] size 22 yalign 0.5
+                            text pt["titulo"] size 18 bold True color "#ffd13b" outlines [(2, "#24031a", 0, 0)]
+                        text pt["sub"] size 13 color "#ffffff" outlines [(1, "#24031a", 0, 0)] xalign 0.5
+            else:
+                button:
+                    xpos ppos[0]
+                    ypos ppos[1]
+                    xanchor 0.5
+                    yanchor 0.5
+                    background Frame("images/ui/btn_purple_idle.png", 24, 14, 24, 14)
+                    hover_background Frame("images/ui/btn_pink_hover.png", 24, 14, 24, 14)
+                    padding (18, 10)
+                    action Function(registrar_intento_bloqueo, z_key)
+                    vbox:
+                        spacing 2
+                        xalign 0.5
+                        hbox:
+                            spacing 8
+                            xalign 0.5
+                            text "🔒" size 20 yalign 0.5
+                            text pt["titulo"] size 17 bold True color "#ffb3d9" outlines [(2, "#24031a", 0, 0)]
+                        if z_intentos >= 3:
+                            text "⚠️ FALTAN PUNTOS (Clic para Diagnóstico)" size 13 bold True color "#ffd13b" outlines [(1, "#24031a", 0, 0)] xalign 0.5
+                        else:
+                            text "Acceso Bloqueado • Clic para ver requisitos" size 13 color "#ffe6eb" outlines [(1, "#24031a", 0, 0)] xalign 0.5
+
+    # 5. HOTSPOT ESPECIAL DEL FESTIVAL (En el Patio cuando está listo)
+    if ubicacion_nodo == "patio" and festival_listo:
+        button:
+            xpos 960
+            ypos 360
+            xanchor 0.5
+            yanchor 0.5
+            background Frame("images/ui/btn_gold_idle.png", 24, 14, 24, 14)
+            hover_background Frame("images/ui/btn_gold_hover.png", 24, 14, 24, 14)
+            padding (26, 14)
+            at hotspot_pulse
+            action [SetVariable("transicion_caminata_pendiente", "trans_festival"), Play("sound", "audio/sfx_sparkle.wav"), Return("confirmar_ir_festival")]
+            vbox:
+                spacing 4
+                xalign 0.5
+                hbox:
+                    spacing 10
+                    xalign 0.5
+                    text "🏮" size 28 yalign 0.5
+                    text "¡GRAN FESTIVAL CULTURAL NOCTURNO!" size 22 bold True color "#2b0318"
+                    text "✨" size 28 yalign 0.5
+                text "Ceremonia del Festival y Clímax Romántico • Todo el instituto reunido" size 14 bold True color "#7a113a" xalign 0.5
+
+    # 6. OBJETOS INSPECCIONABLES (LORE, PISTAS, SECRETOS Y BONIFICACIONES)
+    for insp in nodo.get("inspecciones", []):
+        $ ipos = insp["pos"]
+        $ insp_id = insp["id"]
+        $ ya_visto = insp_id in objetos_inspeccionados
+        button:
+            xpos ipos[0]
+            ypos ipos[1]
+            xanchor 0.5
+            yanchor 0.5
+            background Frame("images/ui/nav_inspect_idle.png", 20, 12, 20, 12)
+            hover_background Frame("images/ui/nav_inspect_hover.png", 20, 12, 20, 12)
+            padding (16, 8)
+            at hotspot_pulse
+            action [Play("sound", "audio/sfx_chime.wav"), Return(insp["label"])]
+            hbox:
+                spacing 8
+                yalign 0.5
+                text insp["icono"] size 20 yalign 0.5
+                vbox:
+                    spacing 1
+                    hbox:
+                        spacing 6
+                        text insp["titulo"] size 15 bold True color ("#5dfdcb" if ya_visto else "#ffd13b") outlines [(2, "#24031a", 0, 0)]
+                        if ya_visto:
+                            text "✓" size 14 bold True color "#5dfdcb"
+                    text insp["sub"] size 12 italic True color "#ffffff" outlines [(1, "#24031a", 0, 0)]
+
+    # 7. BARRA INFERIOR DE NAVEGACIÓN Y ORIENTACIÓN
+    frame:
+        xalign 0.5
+        yalign 0.99
+        xsize 1840
+        ysize 64
+        background Frame("images/ui/pill_stat_tlr.png", 24, 12, 24, 12)
+        padding (20, 8)
+        hbox:
+            xfill True
+            yalign 0.5
+            hbox:
+                spacing 10
+                yalign 0.5
+                text "📍 Estás en:" size 16 bold True color "#ffb3d9"
+                text "[nodo['nombre']] ([nodo['planta']])" size 16 bold True color "#ffffff" outlines [(1, "#24031a", 0, 0)]
+
+            hbox:
+                xalign 1.0
+                spacing 16
+                yalign 0.5
+                text "💡 Explora haciendo clic en puertas, flechas u objetos" size 14 italic True color "#ffe680" yalign 0.5
+                textbutton "🗺️ Ver Plano Isométrico Global":
+                    action Return("abrir_mapa_global")
+                    background Frame("images/ui/btn_dark_idle.png", 24, 14, 24, 14)
+                    hover_background Frame("images/ui/btn_pink_hover.png", 24, 14, 24, 14)
+                    padding (16, 6)
+                    text_size 15
+                    text_bold True
+                    text_color "#5dfdcb"
+
 

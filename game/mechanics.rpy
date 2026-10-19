@@ -54,6 +54,9 @@ default pase_entregado_hana = False
 
 ## Estado de Exploración Libre del Mapa y Progreso Total de la Partida
 default ubicacion_actual = "patio"
+default ubicacion_nodo = "patio"
+default transicion_caminata_pendiente = None
+default objetos_inspeccionados = set()
 default zonas_exploradas = set()
 default regalo_entregado_akane = False
 default regalo_entregado_yuki = False
@@ -106,6 +109,276 @@ default charlas_intimidad = {
 }
 
 init python:
+    # Grafo de Navegación Point-and-Click en Primera Persona por el Instituto Sakura
+    PUNTOS_NAVEGACION_ESCUELA = {
+        "patio": {
+            "id": "patio",
+            "bg_tag": "bg courtyard",
+            "nombre": "Patio Central Sakura",
+            "subtitulo": "Jardín Central • Fuente de Pétalos",
+            "planta": "EXTERIOR",
+            "icono_planta": "🌸",
+            "puntos": [
+                {
+                    "tipo": "walk",
+                    "titulo": "Entrar al Instituto",
+                    "sub": "Vestíbulo Principal 1F",
+                    "destino_nodo": "pasillo_1f",
+                    "transicion": "trans_walk_forward",
+                    "sonido": "audio/sfx_footsteps.wav",
+                    "pos": (960, 560),
+                    "icono": "🚶‍♂️"
+                },
+                {
+                    "tipo": "walk",
+                    "titulo": "Ala Deportiva",
+                    "sub": "Hacia Taquillas y Cafetería",
+                    "destino_nodo": "cafeteria_pasillo",
+                    "transicion": "trans_hall_right",
+                    "sonido": "audio/sfx_footsteps.wav",
+                    "pos": (1620, 640),
+                    "icono": "🏃‍♀️"
+                }
+            ],
+            "inspecciones": [
+                {
+                    "id": "patio_rumores",
+                    "titulo": "Mural de Anuncios y Banco",
+                    "sub": "Rumores del Festival y preparativos",
+                    "label": "inspeccionar_patio_rumores",
+                    "pos": (340, 680),
+                    "icono": "📌"
+                }
+            ]
+        },
+        "pasillo_1f": {
+            "id": "pasillo_1f",
+            "bg_tag": "bg hallway_1f",
+            "nombre": "Pasillo Principal 1F",
+            "subtitulo": "Planta Baja • Taquillas y Aulas",
+            "planta": "PLANTA BAJA (1F)",
+            "icono_planta": "🏫",
+            "puntos": [
+                {
+                    "tipo": "walk",
+                    "titulo": "Subir Escaleras",
+                    "sub": "Hacia Rellano y Planta 2 (2F)",
+                    "destino_nodo": "escaleras",
+                    "transicion": "trans_stairs_up",
+                    "sonido": "audio/sfx_footsteps.wav",
+                    "pos": (960, 520),
+                    "icono": "🪜"
+                },
+                {
+                    "tipo": "zone",
+                    "zona_key": "biblioteca",
+                    "titulo": "Biblioteca Oeste",
+                    "sub": "Club de Lectura • Kuroe Sakamoto",
+                    "destino_label": "zona_biblioteca",
+                    "transicion": "trans_door_open",
+                    "sonido": "audio/sfx_door_slide.wav",
+                    "pos": (360, 600),
+                    "icono": "📖"
+                },
+                {
+                    "tipo": "walk",
+                    "titulo": "Salir al Patio Exterior",
+                    "sub": "Jardín Central Sakura",
+                    "destino_nodo": "patio",
+                    "transicion": "trans_walk_back",
+                    "sonido": "audio/sfx_footsteps.wav",
+                    "pos": (960, 920),
+                    "icono": "🌳"
+                }
+            ],
+            "inspecciones": [
+                {
+                    "id": "taquillas_1f",
+                    "titulo": "Taquillas de Zapatos (Getabako)",
+                    "sub": "Buscar notas o cartas secretas",
+                    "label": "inspeccionar_taquillas_1f",
+                    "pos": (1600, 640),
+                    "icono": "👟"
+                }
+            ]
+        },
+        "escaleras": {
+            "id": "escaleras",
+            "bg_tag": "bg stairs",
+            "nombre": "Rellano de Escaleras",
+            "subtitulo": "Conexión Central • Gran Ventanal de Cerezos",
+            "planta": "ENTREPLANTA",
+            "icono_planta": "🪜",
+            "puntos": [
+                {
+                    "tipo": "walk",
+                    "titulo": "Subir a Planta 2 (2F)",
+                    "sub": "Consejo Estudiantil & Laboratorio",
+                    "destino_nodo": "pasillo_2f",
+                    "transicion": "trans_stairs_up",
+                    "sonido": "audio/sfx_footsteps.wav",
+                    "pos": (640, 480),
+                    "icono": "🔼"
+                },
+                {
+                    "tipo": "zone",
+                    "zona_key": "azotea",
+                    "titulo": "Puerta a la Azotea",
+                    "sub": "Cielo Abierto • Hana Sakuragi",
+                    "destino_label": "zona_azotea",
+                    "transicion": "trans_door_open",
+                    "sonido": "audio/sfx_door_slide.wav",
+                    "pos": (1440, 520),
+                    "icono": "🌤️"
+                },
+                {
+                    "tipo": "walk",
+                    "titulo": "Bajar a Planta 1 (1F)",
+                    "sub": "Vestíbulo y Biblioteca",
+                    "destino_nodo": "pasillo_1f",
+                    "transicion": "trans_stairs_down",
+                    "sonido": "audio/sfx_footsteps.wav",
+                    "pos": (320, 780),
+                    "icono": "🔽"
+                }
+            ],
+            "inspecciones": [
+                {
+                    "id": "ventanal_escaleras",
+                    "titulo": "Gran Ventanal Panorámico",
+                    "sub": "Mirar los cerezos y el horizonte",
+                    "label": "inspeccionar_ventanal_escaleras",
+                    "pos": (1050, 360),
+                    "icono": "🌸"
+                }
+            ]
+        },
+        "pasillo_2f": {
+            "id": "pasillo_2f",
+            "bg_tag": "bg hallway_2f",
+            "nombre": "Pasillo Superior 2F",
+            "subtitulo": "Segunda Planta • Despacho Presidencial y Ciencias",
+            "planta": "SEGUNDA PLANTA (2F)",
+            "icono_planta": "🏛️",
+            "puntos": [
+                {
+                    "tipo": "zone",
+                    "zona_key": "consejo",
+                    "titulo": "Sala del Consejo Estudiantil",
+                    "sub": "Despacho Presidencial • Akane Tachibana",
+                    "destino_label": "zona_consejo",
+                    "transicion": "trans_door_open",
+                    "sonido": "audio/sfx_door_slide.wav",
+                    "pos": (360, 590),
+                    "icono": "👑"
+                },
+                {
+                    "tipo": "zone",
+                    "zona_key": "laboratorio",
+                    "titulo": "Laboratorio de Ciencias",
+                    "sub": "Club de Investigación • Yuki Shirogane",
+                    "destino_label": "zona_laboratorio",
+                    "transicion": "trans_door_open",
+                    "sonido": "audio/sfx_door_slide.wav",
+                    "pos": (1560, 590),
+                    "icono": "🧪"
+                },
+                {
+                    "tipo": "walk",
+                    "titulo": "Bajar por las Escaleras",
+                    "sub": "Hacia Rellano y Planta Baja (1F)",
+                    "destino_nodo": "escaleras",
+                    "transicion": "trans_stairs_down",
+                    "sonido": "audio/sfx_footsteps.wav",
+                    "pos": (960, 920),
+                    "icono": "🪜"
+                }
+            ],
+            "inspecciones": [
+                {
+                    "id": "cartelera_2f",
+                    "titulo": "Cartelera Oficial del Consejo",
+                    "sub": "Avisos de Akane y preparativos",
+                    "label": "inspeccionar_cartelera_2f",
+                    "pos": (960, 530),
+                    "icono": "📋"
+                }
+            ]
+        },
+        "cafeteria_pasillo": {
+            "id": "cafeteria_pasillo",
+            "bg_tag": "bg lockers_gym",
+            "nombre": "Pabellón Deportivo & Cafetería",
+            "subtitulo": "Galería de Taquillas y Acceso al Comedor",
+            "planta": "ALA DEPORTIVA",
+            "icono_planta": "⚽",
+            "puntos": [
+                {
+                    "tipo": "zone",
+                    "zona_key": "cafeteria",
+                    "titulo": "Entrar a la Cafetería",
+                    "sub": "Zona de Almuerzo • Reina Kurokawa",
+                    "destino_label": "zona_cafeteria",
+                    "transicion": "trans_door_open",
+                    "sonido": "audio/sfx_door_slide.wav",
+                    "pos": (580, 580),
+                    "icono": "🍱"
+                },
+                {
+                    "tipo": "walk",
+                    "titulo": "Volver al Patio Central",
+                    "sub": "Jardín Central Sakura",
+                    "destino_nodo": "patio",
+                    "transicion": "trans_hall_left",
+                    "sonido": "audio/sfx_footsteps.wav",
+                    "pos": (1520, 680),
+                    "icono": "🌳"
+                }
+            ],
+            "inspecciones": [
+                {
+                    "id": "vitrina_trofeos",
+                    "titulo": "Vitrina de Trofeos de Atletismo",
+                    "sub": "Medallas y fotos de competiciones",
+                    "label": "inspeccionar_vitrina_trofeos",
+                    "pos": (1100, 520),
+                    "icono": "🏆"
+                }
+            ]
+        },
+        "almacen_mirei": {
+            "id": "almacen_mirei",
+            "bg_tag": "bg chem_lab",
+            "nombre": "Almacén Oculto de Química",
+            "subtitulo": "Trastienda Secreta de Mirei Kanzaki",
+            "planta": "ALA ESTE (OCULTO)",
+            "icono_planta": "⚗️",
+            "puntos": [
+                {
+                    "tipo": "zone",
+                    "zona_key": "laboratorio",
+                    "titulo": "Volver al Laboratorio",
+                    "sub": "Sala de Ciencias Principal",
+                    "destino_label": "zona_laboratorio",
+                    "transicion": "trans_door_open",
+                    "sonido": "audio/sfx_door_slide.wav",
+                    "pos": (960, 890),
+                    "icono": "🚪"
+                }
+            ],
+            "inspecciones": [
+                {
+                    "id": "quimicos_mirei",
+                    "titulo": "Estantería de Reactivos de Mirei",
+                    "sub": "Brebajes humeantes y pociones",
+                    "label": "inspeccionar_quimicos_mirei",
+                    "pos": (520, 560),
+                    "icono": "⚗️"
+                }
+            ]
+        }
+    }
+
     # Diccionario de Zonas del Instituto Sakura para el Mapa de Navegación Libre
     ZONAS_INSTITUTO = {
         "azotea": {
